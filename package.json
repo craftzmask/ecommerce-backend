@@ -12,11 +12,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "express": "^5.1.0"
-  },
-  "devDependencies": {
+    "express": "^5.1.0",
     "compression": "^1.8.1",
+    "dotenv": "^17.2.1",
     "helmet": "^8.1.0",
+    "mongoose": "^8.18.0",
     "morgan": "^1.10.1"
   }
 }
