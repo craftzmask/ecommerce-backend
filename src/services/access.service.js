@@ -71,6 +71,12 @@ class AccessService {
           tokens,
         };
       }
+
+      // if shop was not created successfully
+      return {
+        code: 200,
+        metadata: null,
+      };
     } catch (error) {
       return {
         code: "xxx",
