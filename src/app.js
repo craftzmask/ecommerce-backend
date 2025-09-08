@@ -5,6 +5,8 @@ const helmet = require("helmet");
 const compression = require("compression");
 const app = express();
 
+const { StatusCodes, ReasonPhrases } = require("./utils/httpStatusCode");
+
 // init middlewares
 app.use(morgan("dev"));
 app.use(helmet());
@@ -25,5 +27,19 @@ require("./dbs/init.mongodb");
 app.use("/", require("./routes"));
 
 // handling error
+app.use((req, res, next) => {
+  const error = new Error(ReasonPhrases.NOT_FOUND);
+  error.status = StatusCodes.NOT_FOUND;
+  next(error);
+});
+
+app.use((error, req, res, next) => {
+  const statusCode = error.status || 500;
+  return res.status(statusCode).json({
+    status: "error",
+    code: statusCode,
+    message: error.message || ReasonPhrases.INTERNAL_SERVER_ERROR,
+  });
+});
 
 module.exports = app;
