@@ -18,6 +18,14 @@ Content-Type: application/json
 x-api-key: 5967c682d4053a6b6765117d834ae157f4144d5d4e0de8ea472dd4589213a1685f1e338dd20c9793102de28757cb9872b07cdd8f29cdf0057cce8f5c822536f7
 
 {
-  "email": "shoptips3@gmail.com",
+  "email": "shoptips1@gmail.com",
   "password": "abc123"
 }
+
+### logout
+POST {{url_dev}}/shop/logout
+Content-Type: application/json
+x-api-key: 5967c682d4053a6b6765117d834ae157f4144d5d4e0de8ea472dd4589213a1685f1e338dd20c9793102de28757cb9872b07cdd8f29cdf0057cce8f5c822536f7
+x-client-id: 68bf1341bfc07815e44d145a
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGJmMTM0MWJmYzA3ODE1ZTQ0ZDE0NWEiLCJlbWFpbCI6InNob3B0aXBzMUBnbWFpbC5jb20iLCJpYXQiOjE3NTczNTI4NjIsImV4cCI6MTc1NzUyNTY2Mn0.OX-y4Q8C-3M9Lh1hvOlgCYxVKuT27ed7HrM6GHH3mz8
+
