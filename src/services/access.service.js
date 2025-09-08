@@ -7,7 +7,12 @@ const KeyTokenService = require("./keyToken.service");
 const { createTokenPair } = require("../auth/authUtils");
 const { getInfoData } = require("../utils");
 
-const { ConflictRequestError } = require("../core/error.response");
+const {
+  ConflictRequestError,
+  BadRequestError,
+  AuthFailureError,
+} = require("../core/error.response");
+const { findByEmail } = require("./shop.service");
 
 const RoleShop = {
   SHOP: "SHOP",
@@ -17,6 +22,27 @@ const RoleShop = {
 };
 
 class AccessService {
+  static login = async ({ email, password, refreshToken = null }) => {
+    const foundShop = await findByEmail({ email });
+    if (!foundShop) throw new BadRequestError("Shop is not found");
+
+    const match = await bcrypt.compare(password, foundShop.password);
+    if (!match) throw new AuthFailureError("Authentication Error");
+
+    const { tokens } = await provisionAuthSession({
+      userId: foundShop._id,
+      email,
+    });
+
+    return {
+      shop: getInfoData({
+        fields: ["_id", "name", "email"],
+        object: foundShop,
+      }),
+      tokens,
+    };
+  };
+
   static signUp = async ({ name, email, password }) => {
     // check if email exist
     const holderShop = await shopModel.findOne({ email }).lean();
@@ -37,43 +63,43 @@ class AccessService {
 
     // create token after new shop is signed up successfully
     if (newShop) {
-      const privateKey = crypto.randomBytes(64).toString("hex");
-      const publicKey = crypto.randomBytes(64).toString("hex");
-
-      const keyStore = await KeyTokenService.createKeyToken({
+      const { tokens, keyStore } = await provisionAuthSession({
         userId: newShop._id,
-        privateKey,
-        publicKey,
+        email,
       });
 
       if (!keyStore) {
         throw new ConflictRequestError("Error: keyStore error!");
       }
 
-      const tokens = createTokenPair(
-        { userId: newShop._id, email },
-        privateKey,
-        publicKey
-      );
-
       return {
-        code: 201,
-        metadata: {
-          shop: getInfoData({
-            fields: ["_id", "name", "email"],
-            object: newShop,
-          }),
-          tokens,
-        },
+        shop: getInfoData({
+          fields: ["_id", "name", "email"],
+          object: newShop,
+        }),
+        tokens,
       };
     }
 
     // if shop was not created successfully
-    return {
-      code: 200,
-      metadata: null,
-    };
+    throw new BadRequestError("Created Shop Failed");
   };
+}
+
+async function provisionAuthSession(payload) {
+  const privateKey = crypto.randomBytes(64).toString("hex");
+  const publicKey = crypto.randomBytes(64).toString("hex");
+
+  const tokens = createTokenPair(payload, privateKey, publicKey);
+
+  const keyStore = await KeyTokenService.createKeyToken({
+    userId: payload.userId,
+    privateKey,
+    publicKey,
+    refreshToken: tokens.refreshToken,
+  });
+
+  return { tokens, keyStore };
 }
 
 module.exports = AccessService;
