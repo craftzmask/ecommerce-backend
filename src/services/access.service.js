@@ -18,7 +18,6 @@ const RoleShop = {
 
 class AccessService {
   static signUp = async ({ name, email, password }) => {
-    a;
     // check if email exist
     const holderShop = await shopModel.findOne({ email }).lean();
     if (holderShop) {
@@ -64,8 +63,8 @@ class AccessService {
             fields: ["_id", "name", "email"],
             object: newShop,
           }),
+          tokens,
         },
-        tokens,
       };
     }
 
