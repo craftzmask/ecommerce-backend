@@ -6,6 +6,7 @@ const { OK, CREATED } = require("../../core/success.response");
 class AccessController {
   static logout = async (req, res) => {
     new OK({
+      message: "Logout success!",
       metadata: await AccessService.logout({ keyStore: req.keyStore }),
     }).send(res);
   };
