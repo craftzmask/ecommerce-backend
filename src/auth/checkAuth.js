@@ -1,6 +1,7 @@
 "use strict";
 
 const { findById } = require("../services/apikey.service");
+const { StatusCodes, ReasonPhrases } = require("../utils/httpStatusCode");
 
 const HEADERS = {
   API_KEY: "x-api-key",
@@ -11,15 +12,15 @@ const apiKey = async (req, res, next) => {
   try {
     const key = req.headers[HEADERS.API_KEY]?.toString();
     if (!key) {
-      return res.status(403).json({
-        message: "Forbidden Error",
+      return res.status(StatusCodes.FORBIDDEN).json({
+        message: ReasonPhrases.FORBIDDEN,
       });
     }
 
     const objKey = await findById(key);
     if (!objKey) {
-      return res.status(403).json({
-        message: "Forbidden Error",
+      return res.status(StatusCodes.FORBIDDEN).json({
+        message: ReasonPhrases.FORBIDDEN,
       });
     }
 
@@ -33,7 +34,7 @@ const permission = (permission) => {
   return (req, res, next) => {
     const permissions = req.objKey.permissions;
     if (!permissions) {
-      return res.status(403).json({
+      return res.status(StatusCodes.FORBIDDEN).json({
         message: "Permission denied",
       });
     }
@@ -41,7 +42,7 @@ const permission = (permission) => {
     console.log("permissions::", permissions);
     const validPermission = permissions.includes(permission);
     if (!validPermission) {
-      return res.status(403).json({
+      return res.status(StatusCodes.FORBIDDEN).json({
         message: "Permission denied",
       });
     }
