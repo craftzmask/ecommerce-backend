@@ -29,14 +29,15 @@ class KeyTokenService {
   };
 
   static findByUserId = async (userId) => {
+    console.log(userId);
     return await keyTokenModel
-      .findOne({ user: new Types.ObjectId(userId) })
+      .findOne({ user: Types.ObjectId.createFromHexString(userId) })
       .lean();
   };
 
   static removeKeyById = async (id) => {
     return await keyTokenModel.deleteOne({
-      _id: new Types.ObjectId(id),
+      _id: id,
     });
   };
 }
