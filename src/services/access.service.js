@@ -2,6 +2,7 @@
 
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const JWT = require("jsonwebtoken");
 const shopModel = require("../models/shop.model");
 const KeyTokenService = require("./keyToken.service");
 const { createTokenPair } = require("../auth/authUtils");
@@ -10,6 +11,7 @@ const {
   ConflictRequestError,
   BadRequestError,
   AuthFailureError,
+  ForbiddenError,
 } = require("../core/error.response");
 const shopService = require("./shop.service");
 
@@ -18,6 +20,55 @@ const RoleShop = {
   WRITER: "WRITER",
   READER: "READER",
   ADMIN: "ADMIN",
+};
+
+const handleRefreshToken = async (refreshToken) => {
+  // Check if the refreshToken used being used again
+  const foundToken = await KeyTokenService.findByRefreshTokenUsed(refreshToken);
+
+  // suspect someone accessed to this token illegally
+  if (foundToken) {
+    // Find out who is this
+    const { userId } = JWT.verify(refreshToken, foundToken.privateKey);
+
+    // Delete whole key in db
+    await KeyTokenService.deleteKeyTokenByUserId(userId);
+    throw new ForbiddenError("Something wrong happened! Please login again");
+  }
+
+  // Everything is ok, provides a new pair of tokens to user
+
+  // Check if the refreshToken is valid
+  const tokenHolder = await KeyTokenService.findByRefreshToken(refreshToken);
+  if (!tokenHolder) throw new AuthFailureError("Shop is not registered 1");
+
+  // Verify refresh token
+  const { userId, email } = JWT.verify(refreshToken, tokenHolder.privateKey);
+
+  // Make sure the email is valid and associate with the shop
+  const foundShop = await shopService.findByEmail({ email });
+  if (!foundShop) throw new AuthFailureError("Shop is not registered 2");
+
+  // Generate a new pair of tokens
+  const tokens = await createTokenPair(
+    { userId, email },
+    tokenHolder.privateKey,
+    tokenHolder.publicKey
+  );
+
+  await tokenHolder.updateOne({
+    $set: {
+      refreshToken: tokens.refreshToken, // update new refreshToken
+    },
+    $addToSet: {
+      refreshTokenUsed: refreshToken, // add the used refreshToken to keep track
+    },
+  });
+
+  return {
+    user: { userId, email },
+    tokens,
+  };
 };
 
 const logout = async ({ keyStore }) => {
@@ -47,7 +98,7 @@ const login = async ({ email, password, refreshToken = null }) => {
 
 const signUp = async ({ name, email, password }) => {
   // check if email exist
-  const holderShop = await shopModel.findOne({ email }).lean();
+  const holderShop = await shopService.findByEmail({ email });
   if (holderShop) {
     throw new ConflictRequestError("Error: Shop email is already registered!");
   }
@@ -101,6 +152,6 @@ async function provisionAuthSession(payload) {
   return { tokens, keyStore };
 }
 
-const AccessService = { logout, login, signUp };
+const AccessService = { logout, login, signUp, handleRefreshToken };
 
 module.exports = AccessService;

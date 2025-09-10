@@ -35,6 +35,27 @@ const removeKeyById = async (id) => {
   });
 };
 
-const KeyTokenService = { createKeyToken, findByUserId, removeKeyById };
+const findByRefreshToken = async (refreshToken) => {
+  return await keyTokenModel.findOne({ refreshToken });
+};
+
+const findByRefreshTokenUsed = async (refreshToken) => {
+  return await keyTokenModel
+    .findOne({ refreshTokensUsed: refreshToken })
+    .lean();
+};
+
+const deleteKeyTokenByUserId = async (userId) => {
+  return await keyTokenModel.deleteOne({ user: userId });
+};
+
+const KeyTokenService = {
+  createKeyToken,
+  findByUserId,
+  removeKeyById,
+  findByRefreshTokenUsed,
+  deleteKeyTokenByUserId,
+  findByRefreshToken,
+};
 
 module.exports = KeyTokenService;

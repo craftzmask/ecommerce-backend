@@ -7,7 +7,7 @@ x-api-key: 5967c682d4053a6b6765117d834ae157f4144d5d4e0de8ea472dd4589213a1685f1e3
 
 {
   "name": "Shop TIPS",
-  "email": "shoptips3@gmail.com",
+  "email": "shoptips1@gmail.com",
   "password": "abc123"
 }
 
@@ -18,7 +18,7 @@ Content-Type: application/json
 x-api-key: 5967c682d4053a6b6765117d834ae157f4144d5d4e0de8ea472dd4589213a1685f1e338dd20c9793102de28757cb9872b07cdd8f29cdf0057cce8f5c822536f7
 
 {
-  "email": "shoptips3@gmail.com",
+  "email": "shoptips@gmail.com",
   "password": "abc123"
 }
 
@@ -28,3 +28,14 @@ Content-Type: application/json
 x-api-key: 5967c682d4053a6b6765117d834ae157f4144d5d4e0de8ea472dd4589213a1685f1e338dd20c9793102de28757cb9872b07cdd8f29cdf0057cce8f5c822536f7
 x-client-id: 68c1089ab0ab8221ebf13991
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGMxMDg5YWIwYWI4MjIxZWJmMTM5OTEiLCJlbWFpbCI6InNob3B0aXBzM0BnbWFpbC5jb20iLCJpYXQiOjE3NTc0ODExOTIsImV4cCI6MTc1NzY1Mzk5Mn0.IIId6Q5icPbwk7AZlaT5CPLycxG1mLLNi15t0hqKzlI
+
+### handle refreshToken
+POST {{url_dev}}/shop/handleRefreshToken
+Content-Type: application/json
+x-api-key: 5967c682d4053a6b6765117d834ae157f4144d5d4e0de8ea472dd4589213a1685f1e338dd20c9793102de28757cb9872b07cdd8f29cdf0057cce8f5c822536f7
+x-client-id: 68c1dc7d28a0427b3bd3f127
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGMxZGM3ZDI4YTA0MjdiM2JkM2YxMjciLCJlbWFpbCI6InNob3B0aXBzQGdtYWlsLmNvbSIsImlhdCI6MTc1NzUzNTM3MSwiZXhwIjoxNzU3NzA4MTcxfQ.UJJXYpcaHBb06oHC6OwxnbEjq3K4Kg--Y10UONdCMsY
+
+{
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGMxZGM3ZDI4YTA0MjdiM2JkM2YxMjciLCJlbWFpbCI6InNob3B0aXBzQGdtYWlsLmNvbSIsImlhdCI6MTc1NzUzNTM3MSwiZXhwIjoxNzU4MTQwMTcxfQ.vB4q8Oz8EK5Ed0q4iA2XI1jBouV0c7vYc4omPCL0Clc"
+}
