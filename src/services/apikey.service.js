@@ -7,6 +7,6 @@ const findById = async (key) => {
   return objKey;
 };
 
-module.exports = {
-  findById,
-};
+const ApiKeyService = { findById };
+
+module.exports = ApiKeyService;

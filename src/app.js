@@ -34,7 +34,7 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-  const statusCode = error.status || 500;
+  const statusCode = error.status || StatusCodes.INTERNAL_SERVER_ERROR;
   return res.status(statusCode).json({
     status: "error",
     code: statusCode,
