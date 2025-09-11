@@ -1,67 +1,89 @@
 const { Schema, model } = require("mongoose");
 
-const DOCUMENT_NAME = "Product";
-const COLLECTION_NAME = "Products";
+const PRODUCT_DOCUMENT_NAME = "Product";
+const PRODUCT_COLLECTION_NAME = "Products";
 
 const productSchema = new Schema(
   {
-    product_name: {
+    name: {
       type: String,
       required: true,
+      trim: true,
     },
-    product_thumb: {
+    thumb: {
       type: String,
       required: true,
+      trim: true,
     },
-    product_description: String,
-    product_quantity: {
+    description: String,
+    quantity: {
       type: Number,
       required: true,
+      min: 0,
     },
-    product_price: {
+    price: {
       type: Number,
       required: true,
+      min: 0,
     },
-    product_type: {
+    type: {
       type: String,
       required: true,
       enum: ["Electronics", "Clothing", "Furniture"],
     },
-    product_shop: {
+    shop: {
       type: Schema.Types.ObjectId,
       ref: "Shop",
     },
-    product_attributes: {
+    attributes: {
       type: Schema.Types.Mixed,
       required: true,
     },
   },
   {
-    collection: COLLECTION_NAME,
+    collection: PRODUCT_COLLECTION_NAME,
     timestamps: true,
   }
 );
 
-const electricSchema = new Schema({
-  manufacture: {
-    type: String,
-    required: true,
-  },
-  model: String,
-  color: String,
-});
+const ELECTRONIC_DOCUMENT_NAME = "Electronic";
+const ELECTRONIC_COLLECTION_NAME = "Electronics";
 
-const clothingSchema = new Schema({
-  brand: {
-    type: String,
-    required: true,
+const electronicSchema = new Schema(
+  {
+    manufacturer: {
+      type: String,
+      required: true,
+    },
+    model: String,
+    color: String,
   },
-  size: String,
-  material: String,
-});
+  {
+    collection: ELECTRONIC_COLLECTION_NAME,
+    timestamps: true,
+  }
+);
 
-module.exports = {
-  product: model(DOCUMENT_NAME, productSchema),
-  clothing: model("Clothing", clothingSchema),
-  electronic: model("Electronic", electricSchema),
-};
+const CLOTHING_DOCUMENT_NAME = "Clothing";
+const CLOTHING_COLLECTION_NAME = "Clothing";
+
+const clothingSchema = new Schema(
+  {
+    brand: {
+      type: String,
+      required: true,
+    },
+    size: String,
+    material: String,
+  },
+  {
+    collection: CLOTHING_COLLECTION_NAME,
+    timestamps: true,
+  }
+);
+
+const Product = model(PRODUCT_DOCUMENT_NAME, productSchema);
+const Electronic = model(ELECTRONIC_DOCUMENT_NAME, electronicSchema);
+const Clothing = model(CLOTHING_DOCUMENT_NAME, clothingSchema);
+
+module.exports = { Product, Electronic, Clothing };
