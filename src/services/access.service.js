@@ -71,6 +71,50 @@ const handleRefreshToken = async (refreshToken) => {
   };
 };
 
+// Update handleRefreshToken according to authenticationV2 middleware
+const handleRefreshTokenV2 = async ({ refreshToken, user, keyStore }) => {
+  const { userId, email } = user;
+
+  // suspect someone accessed to this token illegally
+  if (keyStore.refreshTokensUsed.includes(refreshToken)) {
+    // Delete whole key in db
+    await KeyTokenService.deleteKeyTokenByUserId(userId);
+    throw new ForbiddenError("Something wrong happened! Please login again");
+  }
+
+  // Check if the refreshToken is valid
+  if (keyStore.refreshToken !== refreshToken) {
+    throw new AuthFailureError("Shop is not registered 1");
+  }
+
+  // Make sure the email is valid and associate with the shop
+  const foundShop = await shopService.findByEmail({ email });
+  if (!foundShop) {
+    throw new AuthFailureError("Shop is not registered 2");
+  }
+
+  // Generate a new pair of tokens
+  const tokens = await createTokenPair(
+    { userId, email },
+    keyStore.privateKey,
+    keyStore.publicKey
+  );
+
+  await keyStore.updateOne({
+    $set: {
+      refreshToken: tokens.refreshToken, // update new refreshToken
+    },
+    $addToSet: {
+      refreshTokenUsed: refreshToken, // add the used refreshToken to keep track
+    },
+  });
+
+  return {
+    user,
+    tokens,
+  };
+};
+
 const logout = async ({ keyStore }) => {
   return await KeyTokenService.removeKeyById(keyStore._id);
 };
@@ -152,6 +196,12 @@ async function provisionAuthSession(payload) {
   return { tokens, keyStore };
 }
 
-const AccessService = { logout, login, signUp, handleRefreshToken };
+const AccessService = {
+  logout,
+  login,
+  signUp,
+  handleRefreshToken,
+  handleRefreshTokenV2,
+};
 
 module.exports = AccessService;

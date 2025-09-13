@@ -24,9 +24,9 @@ const createKeyToken = async ({
 };
 
 const findByUserId = async (userId) => {
-  return await keyTokenModel
-    .findOne({ user: Types.ObjectId.createFromHexString(userId) })
-    .lean();
+  return await keyTokenModel.findOne({
+    user: Types.ObjectId.createFromHexString(userId),
+  });
 };
 
 const removeKeyById = async (id) => {
