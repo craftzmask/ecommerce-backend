@@ -61,7 +61,7 @@ const handleRefreshToken = async (refreshToken) => {
       refreshToken: tokens.refreshToken, // update new refreshToken
     },
     $addToSet: {
-      refreshTokenUsed: refreshToken, // add the used refreshToken to keep track
+      refreshTokensUsed: refreshToken, // add the used refreshToken to keep track
     },
   });
 
@@ -105,7 +105,7 @@ const handleRefreshTokenV2 = async ({ refreshToken, user, keyStore }) => {
       refreshToken: tokens.refreshToken, // update new refreshToken
     },
     $addToSet: {
-      refreshTokenUsed: refreshToken, // add the used refreshToken to keep track
+      refreshTokensUsed: refreshToken, // add the used refreshToken to keep track
     },
   });
 
