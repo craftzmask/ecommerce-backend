@@ -82,8 +82,8 @@ const clothingSchema = new Schema(
   }
 );
 
-const Product = model(PRODUCT_DOCUMENT_NAME, productSchema);
-const Electronic = model(ELECTRONIC_DOCUMENT_NAME, electronicSchema);
-const Clothing = model(CLOTHING_DOCUMENT_NAME, clothingSchema);
+const productModel = model(PRODUCT_DOCUMENT_NAME, productSchema);
+const electronicModel = model(ELECTRONIC_DOCUMENT_NAME, electronicSchema);
+const clothingModel = model(CLOTHING_DOCUMENT_NAME, clothingSchema);
 
-module.exports = { Product, Electronic, Clothing };
+module.exports = { productModel, electronicModel, clothingModel };
