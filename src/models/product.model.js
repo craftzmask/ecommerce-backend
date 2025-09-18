@@ -73,7 +73,7 @@ const productSchema = new Schema(
   }
 );
 
-productSchema.pre("create", function (next) {
+productSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
