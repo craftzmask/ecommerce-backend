@@ -33,6 +33,15 @@ class ProductFactory {
       skip,
     });
   }
+
+  static async findAllPublishForShop({ product_shop, limit = 50, skip = 0 }) {
+    const query = { product_shop, isPublished: true };
+    return await productRepo.findAllPublishForShop({
+      query,
+      limit,
+      skip,
+    });
+  }
 }
 
 /*

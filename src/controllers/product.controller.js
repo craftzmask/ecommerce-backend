@@ -25,8 +25,21 @@ const getAllDraftsForShop = async (req, res) => {
     }),
   }).send(res);
 };
+
+const getAllPublishForShop = async (req, res) => {
+  new OK({
+    message: "Fetch all publish successfully!",
+    metadata: await ProductService.findAllPublishForShop({
+      product_shop: req.user.userId,
+    }),
+  }).send(res);
+};
 // END QUERY //
 
-const AccessController = { createProduct, getAllDraftsForShop };
+const AccessController = {
+  createProduct,
+  getAllDraftsForShop,
+  getAllPublishForShop,
+};
 
 module.exports = AccessController;
