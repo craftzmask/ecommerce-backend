@@ -6,6 +6,7 @@ const {
   clothingModel,
 } = require("../models/product.model");
 const { BadRequestError } = require("../core/error.response");
+const productRepo = require("../models/repositories/product.repo");
 
 class ProductFactory {
   static productRegistry = {};
@@ -22,6 +23,16 @@ class ProductFactory {
 
     return new productClass(payload).createProduct();
   }
+
+  // ACTIONS - Shop
+  static async findAllDraftsForShop({ shopId, limit = 50, skip = 0 }) {
+    const query = { shopId, isDraft: true };
+    return await productRepo.findAllDraftsForShop({
+      query,
+      limit,
+      skip,
+    });
+  }
 }
 
 /*
@@ -35,7 +46,7 @@ class Product {
     quantity,
     price,
     type,
-    shop,
+    shopId,
     attributes,
   }) {
     this.name = name;
@@ -44,7 +55,7 @@ class Product {
     this.quantity = quantity;
     this.price = price;
     this.type = type;
-    this.shop = shop;
+    this.shopId = shopId;
     this.attributes = attributes;
   }
 
@@ -57,7 +68,7 @@ class Clothing extends Product {
   async createProduct() {
     const newClothing = await clothingModel.create({
       ...this.attributes,
-      shopId: this.shop,
+      shopId: this.shopId,
     });
 
     if (!newClothing) {
@@ -77,7 +88,7 @@ class Electronic extends Product {
   async createProduct() {
     const newElectronic = await electronicModel.create({
       ...this.attributes,
-      shopId: this.shop,
+      shopId: this.shopId,
     });
 
     if (!newElectronic) {
