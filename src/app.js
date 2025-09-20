@@ -40,6 +40,7 @@ app.use((error, req, res, next) => {
   return res.status(statusCode).json({
     status: "error",
     code: statusCode,
+    error: error.stack,
     message: error.message || ReasonPhrases.INTERNAL_SERVER_ERROR,
   });
 });

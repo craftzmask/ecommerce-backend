@@ -2,55 +2,56 @@
 
 const { Schema, model } = require("mongoose");
 const slugify = require("slugify");
+const { BadRequestError } = require("../core/error.response");
 
 const PRODUCT_DOCUMENT_NAME = "Product";
 const PRODUCT_COLLECTION_NAME = "Products";
 
 const productSchema = new Schema(
   {
-    name: {
+    product_name: {
       type: String,
       required: true,
       trim: true,
     },
-    thumb: {
+    product_thumb: {
       type: String,
       required: true,
       trim: true,
     },
-    description: String,
-    slug: String,
-    quantity: {
+    product_description: String,
+    product_slug: String,
+    product_quantity: {
       type: Number,
       required: true,
       min: 0,
     },
-    price: {
+    product_price: {
       type: Number,
       required: true,
       min: 0,
     },
-    type: {
+    product_type: {
       type: String,
       required: true,
       enum: ["Electronics", "Clothing", "Furniture"],
     },
-    shopId: {
+    product_shop: {
       type: Schema.Types.ObjectId,
       ref: "Shop",
     },
-    attributes: {
+    product_attributes: {
       type: Schema.Types.Mixed,
       required: true,
     },
-    ratingsAverage: {
+    product_ratingsAverage: {
       type: String,
       default: 4.5,
       min: [1, "Rating must be at least or above 1.0"],
       max: [5, "Rating must be at most or below 5.0"],
       set: (val) => Math.round(val * 10) / 10,
     },
-    variations: {
+    product_variations: {
       type: Array,
       default: [],
     },
@@ -74,7 +75,7 @@ const productSchema = new Schema(
 );
 
 productSchema.pre("save", function (next) {
-  this.slug = slugify(this.name, { lower: true });
+  this.slug = slugify(this.product_name, { lower: true });
   next();
 });
 
@@ -89,7 +90,7 @@ const electronicSchema = new Schema(
     },
     model: String,
     color: String,
-    shopId: { type: Schema.Types.ObjectId, ref: "Shop" },
+    product_shop: { type: Schema.Types.ObjectId, ref: "Shop" },
   },
   {
     collection: ELECTRONIC_COLLECTION_NAME,
@@ -108,7 +109,7 @@ const clothingSchema = new Schema(
     },
     size: String,
     material: String,
-    shopId: { type: Schema.Types.ObjectId, ref: "Shop" },
+    product_shop: { type: Schema.Types.ObjectId, ref: "Shop" },
   },
   {
     collection: CLOTHING_COLLECTION_NAME,

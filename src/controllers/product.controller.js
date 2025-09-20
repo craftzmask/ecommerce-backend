@@ -7,8 +7,11 @@ const createProduct = async (req, res) => {
   new CREATED({
     message: "Create new product successfully!",
     metadata: await ProductService.createProduct({
-      ...req.body,
-      shopId: req.user.userId,
+      type: req.body.product_type,
+      payload: {
+        ...req.body,
+        product_shop: req.user.userId,
+      },
     }),
   }).send(res);
 };
@@ -18,7 +21,7 @@ const getAllDraftsForShop = async (req, res) => {
   new OK({
     message: "Fetch all drafts successfully!",
     metadata: await ProductService.findAllDraftsForShop({
-      shopId: req.user.userId,
+      product_shop: req.user.userId,
     }),
   }).send(res);
 };

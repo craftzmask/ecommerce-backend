@@ -15,8 +15,8 @@ class ProductFactory {
     ProductFactory.productRegistry[type] = classRef;
   };
 
-  static async createProduct(payload) {
-    const productClass = ProductFactory.productRegistry[payload.type];
+  static async createProduct({ type, payload }) {
+    const productClass = ProductFactory.productRegistry[type];
     if (!productClass) {
       throw new BadRequestError(`Invalid Product Type: ${type}`);
     }
@@ -25,8 +25,8 @@ class ProductFactory {
   }
 
   // ACTIONS - Shop
-  static async findAllDraftsForShop({ shopId, limit = 50, skip = 0 }) {
-    const query = { shopId, isDraft: true };
+  static async findAllDraftsForShop({ product_shop, limit = 50, skip = 0 }) {
+    const query = { product_shop, isDraft: true };
     return await productRepo.findAllDraftsForShop({
       query,
       limit,
@@ -40,23 +40,23 @@ class ProductFactory {
 */
 class Product {
   constructor({
-    name,
-    thumb,
-    description,
-    quantity,
-    price,
-    type,
-    shopId,
-    attributes,
+    product_name,
+    product_thumb,
+    product_description,
+    product_quantity,
+    product_price,
+    product_type,
+    product_shop,
+    product_attributes,
   }) {
-    this.name = name;
-    this.thumb = thumb;
-    this.description = description;
-    this.quantity = quantity;
-    this.price = price;
-    this.type = type;
-    this.shopId = shopId;
-    this.attributes = attributes;
+    this.product_name = product_name;
+    this.product_thumb = product_thumb;
+    this.product_description = product_description;
+    this.product_quantity = product_quantity;
+    this.product_price = product_price;
+    this.product_type = product_type;
+    this.product_shop = product_shop;
+    this.product_attributes = product_attributes;
   }
 
   async createProduct(_id) {
@@ -67,8 +67,8 @@ class Product {
 class Clothing extends Product {
   async createProduct() {
     const newClothing = await clothingModel.create({
-      ...this.attributes,
-      shopId: this.shopId,
+      ...this.product_attributes,
+      product_shop: this.product_shop,
     });
 
     if (!newClothing) {
@@ -87,8 +87,8 @@ class Clothing extends Product {
 class Electronic extends Product {
   async createProduct() {
     const newElectronic = await electronicModel.create({
-      ...this.attributes,
-      shopId: this.shopId,
+      ...this.product_attributes,
+      product_shop: this.product_shop,
     });
 
     if (!newElectronic) {
@@ -105,12 +105,7 @@ class Electronic extends Product {
 }
 
 // Register product types
-const productType = {
-  ELECTRONIC: "Electronic",
-  CLOTHING: "Clothing",
-};
-
-ProductFactory.registerProductType(productType.CLOTHING, Clothing);
-ProductFactory.registerProductType(productType.ELECTRONIC, Electronic);
+ProductFactory.registerProductType("Electronic", Electronic);
+ProductFactory.registerProductType("Clothing", Clothing);
 
 module.exports = ProductFactory;
