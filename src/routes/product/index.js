@@ -12,6 +12,7 @@ router.get(
   asyncErrorHandler(ProductController.searchProductsByUser)
 );
 router.get("", ProductController.getAllProducts);
+router.get("/:id", ProductController.getProduct);
 
 // Require authentication to perform any actions below
 router.use(authentication);

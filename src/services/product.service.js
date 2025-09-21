@@ -71,6 +71,10 @@ class ProductFactory {
       select: ["product_id", "product_description", "product_thumb"],
     });
   }
+
+  static async findProduct({ product_id }) {
+    return ProductRepo.findProduct({ product_id, unSelect: ["__v"] });
+  }
 }
 
 /*

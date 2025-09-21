@@ -70,6 +70,15 @@ const getAllProducts = async (req, res) => {
     metadata: await ProductService.findAllProducts(req.query),
   }).send(res);
 };
+
+const getProduct = async (req, res) => {
+  new OK({
+    message: "Get product successfully!",
+    metadata: await ProductService.findProduct({
+      product_id: req.params.id,
+    }),
+  }).send(res);
+};
 // END QUERY //
 
 const AccessController = {
@@ -79,6 +88,7 @@ const AccessController = {
   getAllDraftsForShop,
   getAllPublishForShop,
   getAllProducts,
+  getProduct,
   searchProductsByUser,
 };
 
