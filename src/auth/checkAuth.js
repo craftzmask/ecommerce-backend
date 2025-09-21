@@ -1,6 +1,6 @@
 "use strict";
 
-const apiKeyService = require("../services/apikey.service");
+const ApiKeyService = require("../services/apikey.service");
 const { StatusCodes, ReasonPhrases } = require("../utils/httpStatusCode");
 
 const HEADERS = {
@@ -17,7 +17,7 @@ const apiKey = async (req, res, next) => {
       });
     }
 
-    const objKey = await apiKeyService.findById(key);
+    const objKey = await ApiKeyService.findById(key);
     if (!objKey) {
       return res.status(StatusCodes.FORBIDDEN).json({
         message: ReasonPhrases.FORBIDDEN,

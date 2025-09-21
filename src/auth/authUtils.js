@@ -36,7 +36,6 @@ const createTokenPair = (payload, privateKey, publicKey) => {
   }
 };
 
-// Improve and fix error logic
 const authentication = asyncErrorHandler(async (req, res, next) => {
   const userId = req.headers[HEADERS.CLIENT_ID];
   if (!userId) {

@@ -1,22 +1,21 @@
 "use strict";
 
 const express = require("express");
-const accessController = require("../../controllers/access.controller");
 const router = express.Router();
-
+const AccessController = require("../../controllers/access.controller");
 const { authentication } = require("../../auth/authUtils");
 const asyncErrorHandler = require("../../helpers/asyncErrorHandler");
 
-router.post("/shop/signup", asyncErrorHandler(accessController.signUp));
-router.post("/shop/login", asyncErrorHandler(accessController.login));
+router.post("/shop/signup", asyncErrorHandler(AccessController.signUp));
+router.post("/shop/login", asyncErrorHandler(AccessController.login));
 
 // Authentication
 router.use(authentication);
 
-router.post("/shop/logout", asyncErrorHandler(accessController.logout));
+router.post("/shop/logout", asyncErrorHandler(AccessController.logout));
 router.post(
   "/shop/handleRefreshToken",
-  asyncErrorHandler(accessController.handleRefreshToken)
+  asyncErrorHandler(AccessController.handleRefreshToken)
 );
 
 module.exports = router;

@@ -2,7 +2,6 @@
 
 const ProductService = require("../services/product.service");
 const { OK, CREATED } = require("../core/success.response");
-const productRepo = require("../models/repositories/product.repo");
 
 const createProduct = async (req, res) => {
   new CREATED({

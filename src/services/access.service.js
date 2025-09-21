@@ -3,17 +3,17 @@
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const JWT = require("jsonwebtoken");
-const shopModel = require("../models/shop.model");
 const KeyTokenService = require("./keyToken.service");
-const { createTokenPair } = require("../auth/authUtils");
-const { getInfoData } = require("../utils");
+const ShopService = require("./shop.service");
+const ShopModel = require("../models/shop.model");
 const {
   ConflictRequestError,
   BadRequestError,
   AuthFailureError,
   ForbiddenError,
 } = require("../core/error.response");
-const shopService = require("./shop.service");
+const { createTokenPair } = require("../auth/authUtils");
+const { getInfoData } = require("../utils");
 
 const RoleShop = {
   SHOP: "SHOP",
@@ -46,7 +46,7 @@ const handleRefreshToken = async (refreshToken) => {
   const { userId, email } = JWT.verify(refreshToken, tokenHolder.privateKey);
 
   // Make sure the email is valid and associate with the shop
-  const foundShop = await shopService.findByEmail({ email });
+  const foundShop = await ShopService.findByEmail({ email });
   if (!foundShop) throw new AuthFailureError("Shop is not registered 2");
 
   // Generate a new pair of tokens
@@ -88,7 +88,7 @@ const handleRefreshTokenV2 = async ({ refreshToken, user, keyStore }) => {
   }
 
   // Make sure the email is valid and associate with the shop
-  const foundShop = await shopService.findByEmail({ email });
+  const foundShop = await ShopService.findByEmail({ email });
   if (!foundShop) {
     throw new AuthFailureError("Shop is not registered 2");
   }
@@ -120,7 +120,7 @@ const logout = async ({ keyStore }) => {
 };
 
 const login = async ({ email, password, refreshToken = null }) => {
-  const foundShop = await shopService.findByEmail({ email });
+  const foundShop = await ShopService.findByEmail({ email });
   if (!foundShop) throw new BadRequestError("Shop is not found");
 
   const match = await bcrypt.compare(password, foundShop.password);
@@ -142,14 +142,14 @@ const login = async ({ email, password, refreshToken = null }) => {
 
 const signUp = async ({ name, email, password }) => {
   // check if email exist
-  const holderShop = await shopService.findByEmail({ email });
+  const holderShop = await ShopService.findByEmail({ email });
   if (holderShop) {
     throw new ConflictRequestError("Error: Shop email is already registered!");
   }
 
   // sign up shop
   const passwordHash = await bcrypt.hash(password, 10);
-  const newShop = await shopModel.create({
+  const newShop = await ShopModel.create({
     name,
     email,
     password: passwordHash,

@@ -1,37 +1,38 @@
 "use strict";
 
 const express = require("express");
-const productController = require("../../controllers/product.controller");
-const { authentication } = require("../../auth/authUtils");
 const router = express.Router();
-
+const ProductController = require("../../controllers/product.controller");
+const { authentication } = require("../../auth/authUtils");
 const asyncErrorHandler = require("../../helpers/asyncErrorHandler");
 
+// Users can search without loggin
 router.get(
   "/search/:keySearch",
-  asyncErrorHandler(productController.searchProductsByUser)
+  asyncErrorHandler(ProductController.searchProductsByUser)
 );
 
+// Require authentication to perform any actions below
 router.use(authentication);
 
-router.post("", asyncErrorHandler(productController.createProduct));
+router.post("", asyncErrorHandler(ProductController.createProduct));
 router.post(
   "/publish/:id",
-  asyncErrorHandler(productController.publishProductByShop)
+  asyncErrorHandler(ProductController.publishProductByShop)
 );
 router.post(
   "/unpublish/:id",
-  asyncErrorHandler(productController.unPublishProductByShop)
+  asyncErrorHandler(ProductController.unPublishProductByShop)
 );
 
 // QUERY //
 router.get(
   "/drafts/all",
-  asyncErrorHandler(productController.getAllDraftsForShop)
+  asyncErrorHandler(ProductController.getAllDraftsForShop)
 );
 router.get(
   "/published/all",
-  asyncErrorHandler(productController.getAllPublishForShop)
+  asyncErrorHandler(ProductController.getAllPublishForShop)
 );
 
 module.exports = router;

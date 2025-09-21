@@ -1,12 +1,12 @@
 "use strict";
 
 const {
-  productModel,
-  electronicModel,
-  clothingModel,
+  ProductModel,
+  ElectronicModel,
+  ClothingModel,
 } = require("../models/product.model");
 const { BadRequestError } = require("../core/error.response");
-const productRepo = require("../models/repositories/product.repo");
+const ProductRepo = require("../models/repositories/product.repo");
 
 class ProductFactory {
   static productRegistry = {};
@@ -25,11 +25,11 @@ class ProductFactory {
   }
 
   static async publishProductByShop({ product_shop, product_id }) {
-    return await productRepo.publishProductByShop({ product_shop, product_id });
+    return await ProductRepo.publishProductByShop({ product_shop, product_id });
   }
 
   static async unPublishProductByShop({ product_shop, product_id }) {
-    return await productRepo.unPublishProductByShop({
+    return await ProductRepo.unPublishProductByShop({
       product_shop,
       product_id,
     });
@@ -37,7 +37,7 @@ class ProductFactory {
 
   static async findAllDraftsForShop({ product_shop, limit = 50, skip = 0 }) {
     const query = { product_shop, isDraft: true };
-    return await productRepo.findAllDraftsForShop({
+    return await ProductRepo.findAllDraftsForShop({
       query,
       limit,
       skip,
@@ -46,7 +46,7 @@ class ProductFactory {
 
   static async findAllPublishForShop({ product_shop, limit = 50, skip = 0 }) {
     const query = { product_shop, isPublished: true };
-    return await productRepo.findAllPublishForShop({
+    return await ProductRepo.findAllPublishForShop({
       query,
       limit,
       skip,
@@ -54,7 +54,7 @@ class ProductFactory {
   }
 
   static async searchProductsByUser({ keySearch }) {
-    return await productRepo.searchProductsByUser({ keySearch });
+    return await ProductRepo.searchProductsByUser({ keySearch });
   }
 }
 
@@ -83,13 +83,13 @@ class Product {
   }
 
   async createProduct(_id) {
-    return await productModel.create({ ...this, _id });
+    return await ProductModel.create({ ...this, _id });
   }
 }
 
 class Clothing extends Product {
   async createProduct() {
-    const newClothing = await clothingModel.create({
+    const newClothing = await ClothingModel.create({
       ...this.product_attributes,
       product_shop: this.product_shop,
     });
@@ -109,7 +109,7 @@ class Clothing extends Product {
 
 class Electronic extends Product {
   async createProduct() {
-    const newElectronic = await electronicModel.create({
+    const newElectronic = await ElectronicModel.create({
       ...this.product_attributes,
       product_shop: this.product_shop,
     });

@@ -1,4 +1,4 @@
-const { productModel } = require("../product.model");
+const { ProductModel } = require("../product.model");
 const { Types } = require("mongoose");
 
 const findAllDraftsForShop = async ({ query, limit, skip }) => {
@@ -10,7 +10,7 @@ const findAllPublishForShop = async ({ query, limit, skip }) => {
 };
 
 const publishProductByShop = async ({ product_shop, product_id }) => {
-  const foundProduct = await productModel.findOne({
+  const foundProduct = await ProductModel.findOne({
     product_shop: Types.ObjectId.createFromHexString(product_shop),
     _id: Types.ObjectId.createFromHexString(product_id),
   });
@@ -26,7 +26,7 @@ const publishProductByShop = async ({ product_shop, product_id }) => {
 };
 
 const unPublishProductByShop = async ({ product_shop, product_id }) => {
-  const foundProduct = await productModel.findOne({
+  const foundProduct = await ProductModel.findOne({
     product_shop: Types.ObjectId.createFromHexString(product_shop),
     _id: Types.ObjectId.createFromHexString(product_id),
   });
@@ -43,11 +43,10 @@ const unPublishProductByShop = async ({ product_shop, product_id }) => {
 
 const searchProductsByUser = async ({ keySearch }) => {
   const regexSearch = new RegExp(keySearch);
-  const result = await productModel
-    .find(
-      { $text: { $search: regexSearch }, isPublished: true },
-      { score: { $meta: "textScore" } }
-    )
+  const result = await ProductModel.find(
+    { $text: { $search: regexSearch }, isPublished: true },
+    { score: { $meta: "textScore" } }
+  )
     .sort({ score: { $meta: "textScore" } })
     .lean();
 
@@ -55,8 +54,7 @@ const searchProductsByUser = async ({ keySearch }) => {
 };
 
 const queryProducts = async ({ query, limit, skip }) => {
-  return await productModel
-    .find(query)
+  return await ProductModel.find(query)
     .populate("product_shop", "name email -_id")
     .sort({ updateAt: -1 })
     .skip(skip)
@@ -64,7 +62,7 @@ const queryProducts = async ({ query, limit, skip }) => {
     .lean();
 };
 
-const productRepo = {
+const ProductRepo = {
   publishProductByShop,
   unPublishProductByShop,
   findAllDraftsForShop,
@@ -72,4 +70,4 @@ const productRepo = {
   searchProductsByUser,
 };
 
-module.exports = productRepo;
+module.exports = ProductRepo;

@@ -1,6 +1,6 @@
 "use strict";
 
-const shopModel = require("../models/shop.model");
+const ShopModel = require("../models/shop.model");
 
 const findByEmail = async ({
   email,
@@ -12,7 +12,7 @@ const findByEmail = async ({
     roles: 1,
   },
 }) => {
-  return await shopModel.findOne({ email }).select(select).lean();
+  return await ShopModel.findOne({ email }).select(select).lean();
 };
 
 const ShopService = { findByEmail };
