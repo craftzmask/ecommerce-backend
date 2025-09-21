@@ -2,6 +2,7 @@
 
 const ProductService = require("../services/product.service");
 const { OK, CREATED } = require("../core/success.response");
+const productRepo = require("../models/repositories/product.repo");
 
 const createProduct = async (req, res) => {
   new CREATED({
@@ -36,6 +37,15 @@ const unPublishProductByShop = async (req, res) => {
   }).send(res);
 };
 
+const searchProductsByUser = async (req, res) => {
+  new OK({
+    message: "Returned search products",
+    metadata: await ProductService.searchProductsByUser({
+      keySearch: req.params.keySearch,
+    }),
+  }).send(res);
+};
+
 // QUERY //
 const getAllDraftsForShop = async (req, res) => {
   new OK({
@@ -62,6 +72,7 @@ const AccessController = {
   unPublishProductByShop,
   getAllDraftsForShop,
   getAllPublishForShop,
+  searchProductsByUser,
 };
 
 module.exports = AccessController;
