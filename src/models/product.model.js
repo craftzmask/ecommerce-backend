@@ -2,7 +2,6 @@
 
 const { Schema, model } = require("mongoose");
 const slugify = require("slugify");
-const { BadRequestError } = require("../core/error.response");
 
 const PRODUCT_DOCUMENT_NAME = "Product";
 const PRODUCT_COLLECTION_NAME = "Products";
@@ -74,6 +73,7 @@ const productSchema = new Schema(
   }
 );
 
+// Document middleware: run before .save() or .create()
 productSchema.pre("save", function (next) {
   this.slug = slugify(this.product_name, { lower: true });
   next();

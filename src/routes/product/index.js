@@ -7,6 +7,14 @@ const router = express.Router();
 const asyncErrorHandler = require("../../helpers/asyncErrorHandler");
 
 router.post("", asyncErrorHandler(productController.createProduct));
+router.post(
+  "/publish/:id",
+  asyncErrorHandler(productController.publishProductByShop)
+);
+router.post(
+  "/unpublish/:id",
+  asyncErrorHandler(productController.unPublishProductByShop)
+);
 
 // QUERY //
 router.get(

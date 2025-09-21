@@ -16,6 +16,26 @@ const createProduct = async (req, res) => {
   }).send(res);
 };
 
+const publishProductByShop = async (req, res) => {
+  new OK({
+    message: "Published product successfully!",
+    metadata: await ProductService.publishProductByShop({
+      product_shop: req.user.userId,
+      product_id: req.params.id,
+    }),
+  }).send(res);
+};
+
+const unPublishProductByShop = async (req, res) => {
+  new OK({
+    message: "Unpublished product successfully!",
+    metadata: await ProductService.unPublishProductByShop({
+      product_shop: req.user.userId,
+      product_id: req.params.id,
+    }),
+  }).send(res);
+};
+
 // QUERY //
 const getAllDraftsForShop = async (req, res) => {
   new OK({
@@ -38,6 +58,8 @@ const getAllPublishForShop = async (req, res) => {
 
 const AccessController = {
   createProduct,
+  publishProductByShop,
+  unPublishProductByShop,
   getAllDraftsForShop,
   getAllPublishForShop,
 };

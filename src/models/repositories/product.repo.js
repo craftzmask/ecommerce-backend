@@ -9,6 +9,38 @@ const findAllPublishForShop = async ({ query, limit, skip }) => {
   return await queryProducts({ query, limit, skip });
 };
 
+const publishProductByShop = async ({ product_shop, product_id }) => {
+  const foundProduct = await productModel.findOne({
+    product_shop: Types.ObjectId.createFromHexString(product_shop),
+    _id: Types.ObjectId.createFromHexString(product_id),
+  });
+
+  if (!foundProduct) return null;
+
+  foundProduct.isDraft = false;
+  foundProduct.isPublished = true;
+
+  const { modifiedCount } = await foundProduct.updateOne(foundProduct);
+
+  return modifiedCount;
+};
+
+const unPublishProductByShop = async ({ product_shop, product_id }) => {
+  const foundProduct = await productModel.findOne({
+    product_shop: Types.ObjectId.createFromHexString(product_shop),
+    _id: Types.ObjectId.createFromHexString(product_id),
+  });
+
+  if (!foundProduct) return null;
+
+  foundProduct.isDraft = true;
+  foundProduct.isPublished = false;
+
+  const { modifiedCount } = await foundProduct.updateOne(foundProduct);
+
+  return modifiedCount;
+};
+
 const queryProducts = async ({ query, limit, skip }) => {
   return await productModel
     .find(query)
@@ -20,6 +52,8 @@ const queryProducts = async ({ query, limit, skip }) => {
 };
 
 const productRepo = {
+  publishProductByShop,
+  unPublishProductByShop,
   findAllDraftsForShop,
   findAllPublishForShop,
 };

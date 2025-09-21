@@ -24,7 +24,17 @@ class ProductFactory {
     return new productClass(payload).createProduct();
   }
 
-  // ACTIONS - Shop
+  static async publishProductByShop({ product_shop, product_id }) {
+    return await productRepo.publishProductByShop({ product_shop, product_id });
+  }
+
+  static async unPublishProductByShop({ product_shop, product_id }) {
+    return await productRepo.unPublishProductByShop({
+      product_shop,
+      product_id,
+    });
+  }
+
   static async findAllDraftsForShop({ product_shop, limit = 50, skip = 0 }) {
     const query = { product_shop, isDraft: true };
     return await productRepo.findAllDraftsForShop({
@@ -41,6 +51,10 @@ class ProductFactory {
       limit,
       skip,
     });
+  }
+
+  static async searchProductsByUser({ keySearch }) {
+    return await productRepo.searchProductsByUser({ keySearch });
   }
 }
 
