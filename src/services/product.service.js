@@ -56,6 +56,21 @@ class ProductFactory {
   static async searchProductsByUser({ keySearch }) {
     return await ProductRepo.searchProductsByUser({ keySearch });
   }
+
+  static async findAllProducts({
+    limit = 50,
+    sort = "ctime",
+    page = 1,
+    filter = { isPublished: true },
+  }) {
+    return ProductRepo.findAllProducts({
+      limit,
+      sort,
+      page,
+      filter,
+      select: ["product_id", "product_description", "product_thumb"],
+    });
+  }
 }
 
 /*

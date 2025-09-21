@@ -11,6 +11,7 @@ router.get(
   "/search/:keySearch",
   asyncErrorHandler(ProductController.searchProductsByUser)
 );
+router.get("", ProductController.getAllProducts);
 
 // Require authentication to perform any actions below
 router.use(authentication);
