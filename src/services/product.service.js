@@ -8,6 +8,7 @@ const {
 const { BadRequestError } = require("../core/error.response");
 const ProductRepo = require("../models/repositories/product.repo");
 const { updateNestedObject, removeNullObject } = require("../utils");
+const InventoryModel = require("../models/inventory.model");
 
 class ProductFactory {
   static productRegistry = {};
@@ -112,7 +113,16 @@ class Product {
   }
 
   async createProduct(_id) {
-    return await ProductModel.create({ ...this, _id });
+    const newProduct = await ProductModel.create({ ...this, _id });
+    if (newProduct) {
+      await InventoryModel.create({
+        inven_productId: newProduct._id,
+        inven_shopId: newProduct.product_shop,
+        inven_stock: newProduct.product_quantity,
+      });
+    }
+
+    return newProduct;
   }
 
   async updateProduct({ productId, shopId, productObject }) {
@@ -157,8 +167,6 @@ class Clothing extends Product {
         model: ClothingModel,
       });
     }
-
-    console.log(updateNestedObject(productObject));
 
     return await super.updateProduct({
       productId,
