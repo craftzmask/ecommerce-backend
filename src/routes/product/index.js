@@ -17,6 +17,8 @@ router.get("/:id", ProductController.getProduct);
 // Require authentication to perform any actions below
 router.use(authentication);
 
+router.patch("/:productId", ProductController.updateProduct);
+
 router.post("", asyncErrorHandler(ProductController.createProduct));
 router.post(
   "/publish/:id",

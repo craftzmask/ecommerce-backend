@@ -45,6 +45,18 @@ const searchProductsByUser = async (req, res) => {
   }).send(res);
 };
 
+const updateProduct = async (req, res) => {
+  new OK({
+    message: "Update product successfully!",
+    metadata: await ProductService.updateProduct({
+      productId: req.params.productId,
+      shopId: req.user.userId,
+      type: req.body.product_type,
+      payload: req.body,
+    }),
+  }).send(res);
+};
+
 // QUERY //
 const getAllDraftsForShop = async (req, res) => {
   new OK({
@@ -90,6 +102,7 @@ const AccessController = {
   getAllProducts,
   getProduct,
   searchProductsByUser,
+  updateProduct,
 };
 
 module.exports = AccessController;

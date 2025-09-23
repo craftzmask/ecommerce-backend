@@ -72,6 +72,20 @@ const findProduct = async ({ product_id, unSelect }) => {
   );
 };
 
+const updateProduct = async ({
+  productId,
+  shopId,
+  productObject,
+  model,
+  isNew = true,
+}) => {
+  return await model.findOneAndUpdate(
+    { _id: productId, product_shop: shopId },
+    productObject,
+    { new: isNew }
+  );
+};
+
 const queryProducts = async ({ query, limit, skip }) => {
   return await ProductModel.find(query)
     .populate("product_shop", "name email -_id")
@@ -89,6 +103,7 @@ const ProductRepo = {
   searchProductsByUser,
   findAllProducts,
   findProduct,
+  updateProduct,
 };
 
 module.exports = ProductRepo;
