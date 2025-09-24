@@ -5,7 +5,7 @@ const { Schema, model } = require("mongoose");
 const DOCUMENT_NAME = "Discount";
 const COLLECTION_NAME = "Discounts";
 
-const inventorySchema = new Schema(
+const discountSchema = new Schema(
   {
     discount_name: {
       type: String,
@@ -80,4 +80,4 @@ const inventorySchema = new Schema(
   }
 );
 
-module.exports = model(DOCUMENT_NAME, inventorySchema);
+module.exports = model(DOCUMENT_NAME, discountSchema);
