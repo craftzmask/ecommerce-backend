@@ -3,8 +3,11 @@
 const mongoose = require("mongoose");
 const process = require("process");
 const { countConnect } = require("../helpers/check.connect");
+const {
+  db: { host, name, port },
+} = require("../config/config.mongodb");
 
-const connectString = process.env.DEV_DB_HOST;
+const connectString = `mongodb://${host}:${port}/${name}`;
 
 console.log(connectString);
 

@@ -6,7 +6,7 @@ const { OK, CREATED } = require("../core/success.response");
 const handleRefreshToken = async (req, res) => {
   new OK({
     message: "Get tokens successfully",
-    metadata: await AccessService.handleRefreshTokenV2({
+    metadata: await AccessService.handleRefreshToken({
       refreshToken: req.refreshToken,
       user: req.user,
       keyStore: req.keyStore,

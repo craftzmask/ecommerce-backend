@@ -27,6 +27,4 @@ const prod = {
 const config = { dev, prod };
 const env = process.env.NODE_ENV || "dev";
 
-console.log(config[env], env);
-
 module.exports = config[env];

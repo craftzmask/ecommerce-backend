@@ -2,7 +2,6 @@
 
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-const JWT = require("jsonwebtoken");
 const KeyTokenService = require("./keyToken.service");
 const ShopService = require("./shop.service");
 const ShopModel = require("../models/shop.model");
@@ -22,57 +21,7 @@ const RoleShop = {
   ADMIN: "ADMIN",
 };
 
-const handleRefreshToken = async (refreshToken) => {
-  // Check if the refreshToken used being used again
-  const foundToken = await KeyTokenService.findByRefreshTokenUsed(refreshToken);
-
-  // suspect someone accessed to this token illegally
-  if (foundToken) {
-    // Find out who is this
-    const { userId } = JWT.verify(refreshToken, foundToken.privateKey);
-
-    // Delete whole key in db
-    await KeyTokenService.deleteKeyTokenByUserId(userId);
-    throw new ForbiddenError("Something wrong happened! Please login again");
-  }
-
-  // Everything is ok, provides a new pair of tokens to user
-
-  // Check if the refreshToken is valid
-  const tokenHolder = await KeyTokenService.findByRefreshToken(refreshToken);
-  if (!tokenHolder) throw new AuthFailureError("Shop is not registered 1");
-
-  // Verify refresh token
-  const { userId, email } = JWT.verify(refreshToken, tokenHolder.privateKey);
-
-  // Make sure the email is valid and associate with the shop
-  const foundShop = await ShopService.findByEmail({ email });
-  if (!foundShop) throw new AuthFailureError("Shop is not registered 2");
-
-  // Generate a new pair of tokens
-  const tokens = await createTokenPair(
-    { userId, email },
-    tokenHolder.privateKey,
-    tokenHolder.publicKey
-  );
-
-  await tokenHolder.updateOne({
-    $set: {
-      refreshToken: tokens.refreshToken, // update new refreshToken
-    },
-    $addToSet: {
-      refreshTokensUsed: refreshToken, // add the used refreshToken to keep track
-    },
-  });
-
-  return {
-    user: { userId, email },
-    tokens,
-  };
-};
-
-// Update handleRefreshToken according to authenticationV2 middleware
-const handleRefreshTokenV2 = async ({ refreshToken, user, keyStore }) => {
+const handleRefreshToken = async ({ refreshToken, user, keyStore }) => {
   const { userId, email } = user;
 
   // suspect someone accessed to this token illegally
@@ -201,7 +150,6 @@ const AccessService = {
   login,
   signUp,
   handleRefreshToken,
-  handleRefreshTokenV2,
 };
 
 module.exports = AccessService;
