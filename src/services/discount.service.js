@@ -6,6 +6,7 @@ const {
   NotFoundError,
 } = require("../core/error.response");
 const DiscountModel = require("../models/discount.model");
+const DiscountRepo = require("../models/repositories/discount.repo");
 const ProductRepo = require("../models/repositories/product.repo");
 
 const createDiscountCode = async ({
@@ -103,6 +104,20 @@ const findAllProductsWithDiscountCode = async ({
   return [];
 };
 
-const DiscountService = { createDiscountCode, findAllProductsWithDiscountCode };
+const findAllDiscountCodesByShopId = async ({ limit, page, shopId }) => {
+  return await DiscountRepo.findAllDiscountCodesUnSelect({
+    limit: +limit,
+    page: +page,
+    model: DiscountModel,
+    filter: { shopId, isActive: true },
+    unSelect: ["__v", "shopId"],
+  });
+};
+
+const DiscountService = {
+  createDiscountCode,
+  findAllProductsWithDiscountCode,
+  findAllDiscountCodesByShopId,
+};
 
 module.exports = DiscountService;
