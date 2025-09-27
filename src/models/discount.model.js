@@ -7,69 +7,69 @@ const COLLECTION_NAME = "Discounts";
 
 const discountSchema = new Schema(
   {
-    discount_name: {
+    name: {
       type: String,
       required: true,
     },
-    discount_description: {
+    description: {
       type: String,
       required: true,
     },
-    discount_type: {
+    type: {
       type: String,
       required: true,
       enum: ["fix_amount", "percentage"],
     },
-    discount_value: {
+    value: {
       type: Number,
       required: true,
     },
-    discount_code: {
+    code: {
       type: String,
       required: true,
     },
-    discount_startDate: {
+    startDate: {
       type: Date,
       required: true,
     },
-    discount_endDate: {
+    endDate: {
       type: Date,
       required: true,
     },
-    discount_quantity: {
+    quantity: {
       type: Number,
       rqeuired: true,
     },
-    discount_usesCount: {
+    usesCount: {
       type: Number,
       required: true,
     },
-    discount_usersUsed: {
+    usersUsed: {
       type: Array,
       default: [],
     },
-    discount_maxUsesPerUser: {
+    maxUsesPerUser: {
       type: Number,
       required: true,
     },
-    discount_minOrderValue: {
+    minOrderValue: {
       type: Number,
       required: true,
     },
-    discount_shopId: {
+    shopId: {
       type: Schema.Types.ObjectId,
       ref: "Shop",
     },
-    discount_isActive: {
+    isActive: {
       type: Boolean,
       default: true,
     },
-    discount_appliedTo: {
+    appliedTo: {
       type: String,
       required: true,
       enum: ["all", "specific"],
     },
-    discount_productIds: {
+    productIds: {
       type: Array,
       default: [],
     },
