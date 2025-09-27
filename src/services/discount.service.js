@@ -3,8 +3,10 @@
 const {
   ConflictRequestError,
   BadRequestError,
+  NotFoundError,
 } = require("../core/error.response");
 const DiscountModel = require("../models/discount.model");
+const ProductRepo = require("../models/repositories/product.repo");
 
 const createDiscountCode = async ({
   name,
@@ -26,17 +28,17 @@ const createDiscountCode = async ({
 }) => {
   const now = new Date();
   if (now < new Date(startDate) || now > new Date(endDate)) {
-    throw new BadRequestError("Error: Discount code is expired");
+    throw new BadRequestError("Discount code is expired");
   }
 
   if (new Date(startDate) >= new Date(endDate)) {
-    throw new BadRequestError("Error: Start date must be before end date");
+    throw new BadRequestError("Start date must be before end date");
   }
 
   const foundDiscount = await DiscountModel.findOne({ code, shopId }).lean();
 
   if (foundDiscount && foundDiscount.discount_isActive) {
-    throw new ConflictRequestError("Error: Discount code already exists");
+    throw new ConflictRequestError("Discount code already exists");
   }
 
   const newDiscountCode = await DiscountModel.create({
@@ -61,4 +63,46 @@ const createDiscountCode = async ({
   return newDiscountCode;
 };
 
-module.exports = { createDiscountCode };
+const findAllProductsWithDiscountCode = async ({
+  code,
+  shopId,
+  limit,
+  page,
+}) => {
+  const foundDiscount = await DiscountModel.findOne({ code, shopId });
+  if (!foundDiscount || !foundDiscount.isActive) {
+    throw new NotFoundError("Discount does not exist");
+  }
+
+  if (foundDiscount.appliedTo === "all") {
+    return ProductRepo.findAllProducts({
+      filter: {
+        product_shop: shopId,
+        isPublished: true,
+      },
+      limit: +limit,
+      page: +page,
+      sort: "ctime",
+      select: ["product_name"],
+    });
+  }
+
+  if (foundDiscount.appliedTo === "specific") {
+    return ProductRepo.findAllProducts({
+      filter: {
+        _id: { $in: foundDiscount.productIds },
+        isPublished: true,
+      },
+      limit: +limit,
+      page: +page,
+      sort: "ctime",
+      select: ["product_name"],
+    });
+  }
+
+  return [];
+};
+
+const DiscountService = { createDiscountCode, findAllProductsWithDiscountCode };
+
+module.exports = DiscountService;
