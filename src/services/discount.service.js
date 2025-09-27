@@ -114,8 +114,23 @@ const findAllDiscountCodesByShopId = async ({ limit, page, shopId }) => {
   });
 };
 
+const updateDiscountCode = async ({ code, shopId, payload }) => {
+  const updateDiscountCode = await DiscountModel.findOneAndUpdate(
+    { code, shopId },
+    { $set: payload },
+    { new: true }
+  );
+
+  if (!updateDiscountCode) {
+    throw new NotFoundError("Discount code does not exist");
+  }
+
+  return updateDiscountCode;
+};
+
 const DiscountService = {
   createDiscountCode,
+  updateDiscountCode,
   findAllProductsWithDiscountCode,
   findAllDiscountCodesByShopId,
 };
