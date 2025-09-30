@@ -45,17 +45,13 @@ const handleRefreshToken = async ({ refreshToken, user, keyStore }) => {
   // Generate a new pair of tokens
   const tokens = await createTokenPair(
     { userId, email },
-    keyStore.privateKey,
-    keyStore.publicKey
+    keyStore.publicKey,
+    keyStore.privateKey
   );
 
   await keyStore.updateOne({
-    $set: {
-      refreshToken: tokens.refreshToken, // update new refreshToken
-    },
-    $addToSet: {
-      refreshTokensUsed: refreshToken, // add the used refreshToken to keep track
-    },
+    $set: { refreshToken: tokens.refreshToken },
+    $addToSet: { refreshTokensUsed: refreshToken },
   });
 
   return {
@@ -130,15 +126,15 @@ const signUp = async ({ name, email, password }) => {
 };
 
 async function provisionAuthSession(payload) {
-  const privateKey = crypto.randomBytes(64).toString("hex");
-  const publicKey = crypto.randomBytes(64).toString("hex");
+  const accessTokenKey = crypto.randomBytes(64).toString("hex");
+  const refreshTokenKey = crypto.randomBytes(64).toString("hex");
 
-  const tokens = createTokenPair(payload, privateKey, publicKey);
+  const tokens = createTokenPair(payload, accessTokenKey, refreshTokenKey);
 
   const keyStore = await KeyTokenService.createKeyToken({
     userId: payload.userId,
-    privateKey,
-    publicKey,
+    accessTokenKey,
+    refreshTokenKey,
     refreshToken: tokens.refreshToken,
   });
 

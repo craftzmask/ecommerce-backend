@@ -12,17 +12,17 @@ const HEADERS = {
   REFRESH_TOKEN: "x-refreshtoken-id",
 };
 
-const createTokenPair = (payload, privateKey, publicKey) => {
+const createTokenPair = (payload, accessTokenKey, refreshTokenKey) => {
   try {
-    const accessToken = JWT.sign(payload, publicKey, {
+    const accessToken = JWT.sign(payload, accessTokenKey, {
       expiresIn: "2 days",
     });
 
-    const refreshToken = JWT.sign(payload, privateKey, {
+    const refreshToken = JWT.sign(payload, refreshTokenKey, {
       expiresIn: "7 days",
     });
 
-    JWT.verify(accessToken, publicKey, (error, decode) => {
+    JWT.verify(accessToken, accessTokenKey, (error, decode) => {
       if (error) {
         console.error("error verify::", error);
       } else {
@@ -32,7 +32,7 @@ const createTokenPair = (payload, privateKey, publicKey) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
-    return error;
+    throw new AuthFailureError("Access token is invalid");
   }
 };
 

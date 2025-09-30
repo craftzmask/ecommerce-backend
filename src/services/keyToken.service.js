@@ -5,22 +5,23 @@ const { Types } = require("mongoose");
 
 const createKeyToken = async ({
   userId,
-  privateKey,
-  publicKey,
+  accessTokenKey,
+  refreshTokenKey,
   refreshToken,
 }) => {
   const filter = { user: userId };
   const update = {
-    privateKey,
-    publicKey,
+    accessTokenKey,
+    refreshTokenKey,
     refreshToken,
     refreshTokensUsed: [],
   };
+
   const options = { upsert: true, new: true };
 
   const tokens = await KeyTokenModel.findOneAndUpdate(filter, update, options);
 
-  return tokens ? tokens.publicKey : null;
+  return tokens ? tokens.accessTokenKey : null;
 };
 
 const findByUserId = async (userId) => {
