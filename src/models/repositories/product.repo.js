@@ -88,7 +88,7 @@ const updateProduct = async ({
 
 const queryProducts = async ({ query, limit, skip }) => {
   return await ProductModel.find(query)
-    .populate("product_shop", "name email -_id")
+    .populate("shopId", "name email -_id")
     .sort({ updateAt: -1 })
     .skip(skip)
     .limit(limit)

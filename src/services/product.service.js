@@ -80,32 +80,32 @@ class ProductFactory {
 
 class Product {
   constructor({
-    product_name,
-    product_thumb,
-    product_description,
-    product_quantity,
-    product_price,
-    product_type,
-    product_shop,
-    product_attributes,
+    name,
+    thumb,
+    description,
+    quantity,
+    price,
+    type,
+    shopId,
+    attributes,
   }) {
-    this.product_name = product_name;
-    this.product_thumb = product_thumb;
-    this.product_description = product_description;
-    this.product_quantity = product_quantity;
-    this.product_price = product_price;
-    this.product_type = product_type;
-    this.product_shop = product_shop;
-    this.product_attributes = product_attributes;
+    this.name = name;
+    this.thumb = thumb;
+    this.description = description;
+    this.quantity = quantity;
+    this.price = price;
+    this.type = type;
+    this.shopId = shopId;
+    this.attributes = attributes;
   }
 
   async createProduct(_id) {
     const newProduct = await ProductModel.create({ ...this, _id });
     if (newProduct) {
       await InventoryModel.create({
-        inven_productId: newProduct._id,
-        inven_shopId: newProduct.product_shop,
-        inven_stock: newProduct.product_quantity,
+        productId: newProduct._id,
+        shopId: newProduct.shopId,
+        stock: newProduct.quantity,
       });
     }
 
@@ -125,8 +125,8 @@ class Product {
 class Clothing extends Product {
   async createProduct() {
     const newClothing = await ClothingModel.create({
-      ...this.product_attributes,
-      product_shop: this.product_shop,
+      ...this.attributes,
+      shopId: this.shopId,
     });
 
     if (!newClothing) {
@@ -144,12 +144,12 @@ class Clothing extends Product {
   async updateProduct({ productId, shopId }) {
     const productObject = removeNullObject(this);
 
-    if (productObject.product_attributes) {
+    if (productObject.attributes) {
       await ProductRepo.updateProduct({
         productId,
         shopId,
         productObject: updateNestedObject(
-          removeNullObject(productObject.product_attributes)
+          removeNullObject(productObject.attributes)
         ),
         model: ClothingModel,
       });
@@ -166,8 +166,8 @@ class Clothing extends Product {
 class Electronic extends Product {
   async createProduct() {
     const newElectronic = await ElectronicModel.create({
-      ...this.product_attributes,
-      product_shop: this.product_shop,
+      ...this.attributes,
+      shopId: this.shopId,
     });
 
     if (!newElectronic) {
@@ -185,12 +185,12 @@ class Electronic extends Product {
   async updateProduct({ productId, shopId }) {
     const productObject = removeNullObject(this);
 
-    if (productObject.product_attributes) {
+    if (productObject.attributes) {
       await ProductRepo.updateProduct({
         productId,
         shopId,
         productObject: updateNestedObject(
-          removeNullObject(productObject.product_attributes)
+          removeNullObject(productObject.attributes)
         ),
         model: ElectronicModel,
       });

@@ -78,7 +78,7 @@ const findAllProductsWithDiscountCode = async ({
   if (foundDiscount.appliedTo === "all") {
     return ProductRepo.findAllProducts({
       filter: {
-        product_shop: shopId,
+        shopId,
         isPublished: true,
       },
       limit: +limit,

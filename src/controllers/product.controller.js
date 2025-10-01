@@ -7,10 +7,10 @@ const createProduct = async (req, res) => {
   new CREATED({
     message: "Create new product successfully!",
     metadata: await ProductService.createProduct({
-      type: req.body.product_type,
+      type: req.body.type,
       payload: {
         ...req.body,
-        product_shop: req.user.userId,
+        shopId: req.user.userId,
       },
     }),
   }).send(res);
@@ -20,8 +20,8 @@ const publishProductByShop = async (req, res) => {
   new OK({
     message: "Published product successfully!",
     metadata: await ProductService.publishProductByShop({
-      product_shop: req.user.userId,
-      product_id: req.params.id,
+      shopId: req.user.userId,
+      productId: req.params.id,
     }),
   }).send(res);
 };
@@ -30,8 +30,8 @@ const unPublishProductByShop = async (req, res) => {
   new OK({
     message: "Unpublished product successfully!",
     metadata: await ProductService.unPublishProductByShop({
-      product_shop: req.user.userId,
-      product_id: req.params.id,
+      shopId: req.user.userId,
+      productId: req.params.id,
     }),
   }).send(res);
 };
@@ -51,7 +51,7 @@ const updateProduct = async (req, res) => {
     metadata: await ProductService.updateProduct({
       productId: req.params.productId,
       shopId: req.user.userId,
-      type: req.body.product_type,
+      type: req.body.type,
       payload: req.body,
     }),
   }).send(res);
@@ -62,7 +62,7 @@ const getAllDraftsForShop = async (req, res) => {
   new OK({
     message: "Fetch all drafts successfully!",
     metadata: await ProductService.findAllDraftsForShop({
-      product_shop: req.user.userId,
+      shopId: req.user.userId,
     }),
   }).send(res);
 };
@@ -71,7 +71,7 @@ const getAllPublishForShop = async (req, res) => {
   new OK({
     message: "Fetch all publish successfully!",
     metadata: await ProductService.findAllPublishForShop({
-      product_shop: req.user.userId,
+      shopId: req.user.userId,
     }),
   }).send(res);
 };
