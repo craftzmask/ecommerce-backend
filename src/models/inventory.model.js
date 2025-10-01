@@ -7,24 +7,24 @@ const COLLECTION_NAME = "Inventories";
 
 const inventorySchema = new Schema(
   {
-    inven_productId: {
+    productId: {
       type: Schema.Types.ObjectId,
       ref: "Product",
     },
-    inven_shopId: {
+    shopId: {
       type: Schema.Types.ObjectId,
       ref: "Shop",
     },
-    inven_stock: {
+    stock: {
       type: Number,
       required: true,
       min: [0, "Stock must be at least 0"],
     },
-    inven_location: {
+    location: {
       type: String,
       default: "Unknown",
     },
-    inven_reservation: {
+    reservations: {
       type: Array,
       default: [],
     },
