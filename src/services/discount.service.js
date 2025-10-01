@@ -38,7 +38,7 @@ const createDiscountCode = async ({
 
   const foundDiscount = await DiscountModel.findOne({ code, shopId }).lean();
 
-  if (foundDiscount && foundDiscount.discount_isActive) {
+  if (foundDiscount) {
     throw new ConflictRequestError("Discount code already exists");
   }
 
