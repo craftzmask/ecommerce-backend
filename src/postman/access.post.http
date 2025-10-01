@@ -7,7 +7,7 @@ x-api-key: bed7756369cd600bbf07f4155296d07087c8b88c7267c7b771713bc82dd371567870f
 
 {
   "name": "Shop TIPS",
-  "email": "shoptips23@gmail.com",
+  "email": "shoptips123@gmail.com",
   "password": "abc123"
 }
 
@@ -18,7 +18,7 @@ Content-Type: application/json
 x-api-key: bed7756369cd600bbf07f4155296d07087c8b88c7267c7b771713bc82dd371567870f064a369f36f2b9693d5b318fe8ea49175ad0adf7491913b3b9e77679a68
 
 {
-  "email": "shoptips23@gmail.com",
+  "email": "shoptips123@gmail.com",
   "password": "abc123"
 }
 

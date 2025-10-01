@@ -26,33 +26,22 @@ class ProductFactory {
     return new productClass(payload).createProduct();
   }
 
-  static async publishProductByShop({ product_shop, product_id }) {
-    return await ProductRepo.publishProductByShop({ product_shop, product_id });
+  static async publishProductByShop({ productId, shopId }) {
+    return await ProductRepo.publishProductByShop({ productId, shopId });
   }
 
-  static async unPublishProductByShop({ product_shop, product_id }) {
-    return await ProductRepo.unPublishProductByShop({
-      product_shop,
-      product_id,
-    });
+  static async unPublishProductByShop({ productId, shopId }) {
+    return await ProductRepo.unPublishProductByShop({ productId, shopId });
   }
 
-  static async findAllDraftsForShop({ product_shop, limit = 50, skip = 0 }) {
-    const query = { product_shop, isDraft: true };
-    return await ProductRepo.findAllDraftsForShop({
-      query,
-      limit,
-      skip,
-    });
+  static async findAllDraftsForShop({ shopId, limit = 50, skip = 0 }) {
+    const query = { shopId, isDraft: true };
+    return await ProductRepo.findAllDraftsForShop({ query, limit, skip });
   }
 
-  static async findAllPublishForShop({ product_shop, limit = 50, skip = 0 }) {
-    const query = { product_shop, isPublished: true };
-    return await ProductRepo.findAllPublishForShop({
-      query,
-      limit,
-      skip,
-    });
+  static async findAllPublishForShop({ shopId, limit = 50, skip = 0 }) {
+    const query = { shopId, isPublished: true };
+    return await ProductRepo.findAllPublishForShop({ query, limit, skip });
   }
 
   static async searchProductsByUser({ keySearch }) {
@@ -70,12 +59,12 @@ class ProductFactory {
       sort,
       page,
       filter,
-      select: ["product_id", "product_description", "product_thumb"],
+      select: ["_id", "description", "thumb"],
     });
   }
 
-  static async findProduct({ product_id }) {
-    return ProductRepo.findProduct({ product_id, unSelect: ["__v"] });
+  static async findProduct({ productId }) {
+    return ProductRepo.findProduct({ productId, unSelect: ["__v"] });
   }
 
   static async updateProduct({ productId, shopId, type, payload }) {
@@ -88,9 +77,6 @@ class ProductFactory {
   }
 }
 
-/*
-  Product base class
-*/
 class Product {
   constructor({
     product_name,
@@ -196,7 +182,6 @@ class Electronic extends Product {
   }
 }
 
-// Register product types
 ProductFactory.registerProductType("Electronic", Electronic);
 ProductFactory.registerProductType("Clothing", Clothing);
 

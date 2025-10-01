@@ -128,6 +128,48 @@ const updateDiscountCode = async ({ code, shopId, payload }) => {
   return updateDiscountCode;
 };
 
+/**
+  1 - ensure the discount code exist and still active
+  2 - ensure the code is not expired yet
+  3 - ensure the user still have not reached to the max uses
+  4 - ensure total order must be at least min value to process discount code
+  5 - ensure 
+ */
+
+const applyDiscountCode = async ({ code, shopId, products }) => {
+  const foundDiscount = await DiscountModel.findOne({ code, shopId }).lean();
+  if (!foundDiscount || !foundDiscount.isActive) {
+    throw new NotFoundError("Discount code does not exist");
+  }
+
+  if (now < new Date(startDate) || now > new Date(endDate)) {
+    throw new BadRequestError("Discount code is expired");
+  }
+
+  if (new Date(startDate) >= new Date(endDate)) {
+    throw new BadRequestError("Start date must be before end date");
+  }
+
+  if (foundDiscount.maxUsesPerUser <= 0) {
+    throw new BadRequestError(
+      "User reached to the maximum number of use discount code"
+    );
+  }
+
+  if (foundDiscount.minOrderValue > 0) {
+    let totalOrder = products.reduce(
+      (total, product) =>
+        total + product.product_quantity * product.product_price
+    );
+
+    if (totalOrder < foundDiscount.minOrderValue) {
+      throw new BadRequestError(
+        `The minimum total must be ${foundDiscount.minOrderValue}, but the current total value is ${totalOrder}`
+      );
+    }
+  }
+};
+
 const DiscountService = {
   createDiscountCode,
   updateDiscountCode,

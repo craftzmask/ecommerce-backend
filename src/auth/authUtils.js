@@ -4,13 +4,7 @@ const JWT = require("jsonwebtoken");
 const asyncErrorHandler = require("../helpers/asyncErrorHandler");
 const { AuthFailureError, NotFoundError } = require("../core/error.response");
 const KeyTokenService = require("../services/keyToken.service");
-
-const HEADERS = {
-  API_KEY: "x-api-key",
-  CLIENT_ID: "x-client-id",
-  AUTHORIZATION: "authorization",
-  REFRESH_TOKEN: "x-refreshtoken-id",
-};
+const { HEADERS } = require("../types/auth");
 
 const createTokenPair = (payload, accessTokenKey, refreshTokenKey) => {
   try {
@@ -71,7 +65,7 @@ const authentication = asyncErrorHandler(async (req, res, next) => {
   }
 
   try {
-    const decodeUser = JWT.verify(accessToken, keyStore.publicKey);
+    const decodeUser = JWT.verify(accessToken, keyStore.accessTokenKey);
     if (userId !== decodeUser.userId) {
       throw new AuthFailureError("Invalid User Id");
     }

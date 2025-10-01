@@ -2,11 +2,10 @@
 
 const ApikeyModel = require("../models/apikey.model");
 
-const findById = async (key) => {
-  const objKey = await ApikeyModel.findOne({ key, status: true });
-  return objKey;
+const findByKey = async (key) => {
+  return await ApikeyModel.findOne({ key, isActive: true });
 };
 
-const ApiKeyService = { findById };
+const ApiKeyService = { findByKey };
 
 module.exports = ApiKeyService;

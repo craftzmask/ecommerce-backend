@@ -12,7 +12,7 @@ const apiKeySchema = new Schema(
       required: true,
       unique: true,
     },
-    status: {
+    isActive: {
       type: Boolean,
       default: true,
     },

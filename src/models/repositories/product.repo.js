@@ -10,10 +10,10 @@ const findAllPublishForShop = async ({ query, limit, skip }) => {
   return await queryProducts({ query, limit, skip });
 };
 
-const publishProductByShop = async ({ product_shop, product_id }) => {
+const publishProductByShop = async ({ productId, shopId }) => {
   const foundProduct = await ProductModel.findOne({
-    product_shop: Types.ObjectId.createFromHexString(product_shop),
-    _id: Types.ObjectId.createFromHexString(product_id),
+    shopId: Types.ObjectId.createFromHexString(shopId),
+    _id: Types.ObjectId.createFromHexString(productId),
   });
 
   if (!foundProduct) return null;
@@ -26,10 +26,10 @@ const publishProductByShop = async ({ product_shop, product_id }) => {
   return modifiedCount;
 };
 
-const unPublishProductByShop = async ({ product_shop, product_id }) => {
+const unPublishProductByShop = async ({ productId, shopId }) => {
   const foundProduct = await ProductModel.findOne({
-    product_shop: Types.ObjectId.createFromHexString(product_shop),
-    _id: Types.ObjectId.createFromHexString(product_id),
+    shopId: Types.ObjectId.createFromHexString(shopId),
+    _id: Types.ObjectId.createFromHexString(productId),
   });
 
   if (!foundProduct) return null;
@@ -66,8 +66,8 @@ const findAllProducts = async ({ limit, sort, page, filter, select }) => {
     .lean();
 };
 
-const findProduct = async ({ product_id, unSelect }) => {
-  return await ProductModel.findById(product_id).select(
+const findProduct = async ({ productId, unSelect }) => {
+  return await ProductModel.findById(productId).select(
     getUnSelectData(unSelect)
   );
 };
@@ -80,7 +80,7 @@ const updateProduct = async ({
   isNew = true,
 }) => {
   return await model.findOneAndUpdate(
-    { _id: productId, product_shop: shopId },
+    { _id: productId, shopId },
     productObject,
     { new: isNew }
   );

@@ -8,49 +8,49 @@ const PRODUCT_COLLECTION_NAME = "Products";
 
 const productSchema = new Schema(
   {
-    product_name: {
+    name: {
       type: String,
       required: true,
       trim: true,
     },
-    product_thumb: {
+    thumb: {
       type: String,
       required: true,
       trim: true,
     },
-    product_description: String,
-    product_slug: String,
-    product_quantity: {
+    description: String,
+    slug: String,
+    quantity: {
       type: Number,
       required: true,
       min: 0,
     },
-    product_price: {
+    price: {
       type: Number,
       required: true,
       min: 0,
     },
-    product_type: {
+    type: {
       type: String,
       required: true,
       enum: ["Electronics", "Clothing", "Furniture"],
     },
-    product_shop: {
+    shopId: {
       type: Schema.Types.ObjectId,
       ref: "Shop",
     },
-    product_attributes: {
+    attributes: {
       type: Schema.Types.Mixed,
       required: true,
     },
-    product_ratingsAverage: {
+    ratingsAverage: {
       type: String,
       default: 4.5,
       min: [1, "Rating must be at least or above 1.0"],
       max: [5, "Rating must be at most or below 5.0"],
       set: (val) => Math.round(val * 10) / 10,
     },
-    product_variations: {
+    variations: {
       type: Array,
       default: [],
     },
@@ -74,11 +74,11 @@ const productSchema = new Schema(
 );
 
 // Create index for search
-productSchema.index({ product_name: "text", product_description: "text" });
+productSchema.index({ name: "text", description: "text" });
 
 // Document middleware: run before .save() or .create()
 productSchema.pre("save", function (next) {
-  this.slug = slugify(this.product_name, { lower: true });
+  this.slug = slugify(this.name, { lower: true });
   next();
 });
 
@@ -93,7 +93,7 @@ const electronicSchema = new Schema(
     },
     model: String,
     color: String,
-    product_shop: { type: Schema.Types.ObjectId, ref: "Shop" },
+    shopId: { type: Schema.Types.ObjectId, ref: "Shop" },
   },
   {
     collection: ELECTRONIC_COLLECTION_NAME,
@@ -112,7 +112,7 @@ const clothingSchema = new Schema(
     },
     size: String,
     material: String,
-    product_shop: { type: Schema.Types.ObjectId, ref: "Shop" },
+    shopId: { type: Schema.Types.ObjectId, ref: "Shop" },
   },
   {
     collection: CLOTHING_COLLECTION_NAME,

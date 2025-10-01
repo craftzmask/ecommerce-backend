@@ -9,7 +9,7 @@ const createKeyToken = async ({
   refreshTokenKey,
   refreshToken,
 }) => {
-  const filter = { user: userId };
+  const filter = { userId };
   const update = {
     accessTokenKey,
     refreshTokenKey,
@@ -26,7 +26,7 @@ const createKeyToken = async ({
 
 const findByUserId = async (userId) => {
   return await KeyTokenModel.findOne({
-    user: Types.ObjectId.createFromHexString(userId),
+    userId: Types.ObjectId.createFromHexString(userId),
   });
 };
 

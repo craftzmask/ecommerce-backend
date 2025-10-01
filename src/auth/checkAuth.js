@@ -2,11 +2,7 @@
 
 const ApiKeyService = require("../services/apikey.service");
 const { StatusCodes, ReasonPhrases } = require("../utils/httpStatusCode");
-
-const HEADERS = {
-  API_KEY: "x-api-key",
-  AUTHORIZATION: "authorization",
-};
+const { HEADERS } = require("../types/auth");
 
 const apiKey = async (req, res, next) => {
   try {
@@ -17,7 +13,7 @@ const apiKey = async (req, res, next) => {
       });
     }
 
-    const objKey = await ApiKeyService.findById(key);
+    const objKey = await ApiKeyService.findByKey(key);
     if (!objKey) {
       return res.status(StatusCodes.FORBIDDEN).json({
         message: ReasonPhrases.FORBIDDEN,
@@ -39,7 +35,6 @@ const permission = (permission) => {
       });
     }
 
-    console.log("permissions::", permissions);
     const validPermission = permissions.includes(permission);
     if (!validPermission) {
       return res.status(StatusCodes.FORBIDDEN).json({
