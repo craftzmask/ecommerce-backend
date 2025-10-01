@@ -1,9 +1,10 @@
 "use strict";
 
 const { Schema, model } = require("mongoose");
+const { DISCOUNT_TYPE, DISCOUNT_APPLIED_TO } = require("../types");
 
 const DOCUMENT_NAME = "Discount";
-const COLLECTION_NAME = "Discounts";
+const COLLECTION_NAME = "discounts";
 
 const discountSchema = new Schema(
   {
@@ -18,7 +19,7 @@ const discountSchema = new Schema(
     type: {
       type: String,
       required: true,
-      enum: ["fixed", "percentage"],
+      enum: Object.values(DISCOUNT_TYPE),
     },
     value: {
       type: Number,
@@ -67,7 +68,7 @@ const discountSchema = new Schema(
     appliedTo: {
       type: String,
       required: true,
-      enum: ["all", "specific"],
+      enum: Object.values(DISCOUNT_APPLIED_TO),
     },
     productIds: {
       type: Array,

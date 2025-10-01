@@ -24,9 +24,21 @@ const SHOP_ROLE = {
   ADMIN: "admin",
 };
 
+const DISCOUNT_TYPE = {
+  FIXED: "fixed",
+  PERCENTAGE: "percentage",
+};
+
+const DISCOUNT_APPLIED_TO = {
+  ALL: "all",
+  SPECIFIC: "specific",
+};
+
 module.exports = {
   HEADERS,
   PRODUCT_TYPE,
   SHOP_STATUS,
   SHOP_ROLE,
+  DISCOUNT_TYPE,
+  DISCOUNT_APPLIED_TO,
 };
