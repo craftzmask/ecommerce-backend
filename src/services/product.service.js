@@ -9,6 +9,7 @@ const { BadRequestError } = require("../core/error.response");
 const ProductRepo = require("../models/repositories/product.repo");
 const { updateNestedObject, removeNullObject } = require("../utils");
 const InventoryModel = require("../models/inventory.model");
+const { PRODUCT_TYPE } = require("../types");
 
 class ProductFactory {
   static productRegistry = {};
@@ -115,7 +116,7 @@ class Product {
     return await ProductRepo.updateProduct({
       productId,
       shopId,
-      productObject: productObject,
+      productObject,
       model: ProductModel,
     });
   }
@@ -180,9 +181,30 @@ class Electronic extends Product {
 
     return newProduct;
   }
+
+  async updateProduct({ productId, shopId }) {
+    const productObject = removeNullObject(this);
+
+    if (productObject.product_attributes) {
+      await ProductRepo.updateProduct({
+        productId,
+        shopId,
+        productObject: updateNestedObject(
+          removeNullObject(productObject.product_attributes)
+        ),
+        model: ElectronicModel,
+      });
+    }
+
+    return await super.updateProduct({
+      productId,
+      shopId,
+      productObject: updateNestedObject(productObject),
+    });
+  }
 }
 
-ProductFactory.registerProductType("Electronic", Electronic);
-ProductFactory.registerProductType("Clothing", Clothing);
+ProductFactory.registerProductType(PRODUCT_TYPE.ELECTRONIC, Electronic);
+ProductFactory.registerProductType(PRODUCT_TYPE.CLOTHING, Clothing);
 
 module.exports = ProductFactory;

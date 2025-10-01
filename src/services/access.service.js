@@ -119,7 +119,7 @@ const signUp = async ({ name, email, password }) => {
   throw new BadRequestError("Created Shop Failed");
 };
 
-async function provisionAuthSession(payload) {
+const provisionAuthSession = async (payload) => {
   const accessTokenKey = crypto.randomBytes(64).toString("hex");
   const refreshTokenKey = crypto.randomBytes(64).toString("hex");
 
@@ -133,7 +133,7 @@ async function provisionAuthSession(payload) {
   });
 
   return { tokens, keyStore };
-}
+};
 
 const AccessService = {
   logout,
