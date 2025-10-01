@@ -2,7 +2,7 @@
 
 const ApiKeyService = require("../services/apikey.service");
 const { StatusCodes, ReasonPhrases } = require("../utils/httpStatusCode");
-const { HEADERS } = require("../types/auth");
+const { HEADERS } = require("../types");
 
 const apiKey = async (req, res, next) => {
   try {

@@ -4,7 +4,7 @@ const JWT = require("jsonwebtoken");
 const asyncErrorHandler = require("../helpers/asyncErrorHandler");
 const { AuthFailureError, NotFoundError } = require("../core/error.response");
 const KeyTokenService = require("../services/keyToken.service");
-const { HEADERS } = require("../types/auth");
+const { HEADERS } = require("../types");
 
 const createTokenPair = (payload, accessTokenKey, refreshTokenKey) => {
   try {

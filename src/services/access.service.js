@@ -13,13 +13,7 @@ const {
 } = require("../core/error.response");
 const { createTokenPair } = require("../auth/authUtils");
 const { getInfoData } = require("../utils");
-
-const RoleShop = {
-  SHOP: "SHOP",
-  WRITER: "WRITER",
-  READER: "READER",
-  ADMIN: "ADMIN",
-};
+const { SHOP_ROLE } = require("../types");
 
 const handleRefreshToken = async ({ refreshToken, user, keyStore }) => {
   const { userId, email } = user;
@@ -98,7 +92,7 @@ const signUp = async ({ name, email, password }) => {
     name,
     email,
     password: passwordHash,
-    roles: [RoleShop.SHOP],
+    roles: [SHOP_ROLE.SHOP],
   });
 
   // create token after new shop is signed up successfully

@@ -2,6 +2,7 @@
 
 const { Schema, model } = require("mongoose");
 const slugify = require("slugify");
+const { PRODUCT_TYPE } = require("../types");
 
 const PRODUCT_DOCUMENT_NAME = "Product";
 const PRODUCT_COLLECTION_NAME = "Products";
@@ -33,7 +34,7 @@ const productSchema = new Schema(
     type: {
       type: String,
       required: true,
-      enum: ["Electronics", "Clothing", "Furniture"],
+      enum: Object.values(PRODUCT_TYPE),
     },
     shopId: {
       type: Schema.Types.ObjectId,
