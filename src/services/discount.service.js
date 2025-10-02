@@ -8,6 +8,7 @@ const {
 const DiscountModel = require("../models/discount.model");
 const DiscountRepo = require("../models/repositories/discount.repo");
 const ProductRepo = require("../models/repositories/product.repo");
+const { DISCOUNT_APPLIED_TO, DISCOUNT_TYPE } = require("../types");
 
 const createDiscountCode = async ({
   name,
@@ -19,7 +20,7 @@ const createDiscountCode = async ({
   endDate,
   quantity,
   usesCount,
-  usersUsed,
+  userUsedIds,
   maxUsesPerUser,
   minOrderValue,
   shopId,
@@ -28,16 +29,47 @@ const createDiscountCode = async ({
   productIds,
 }) => {
   const now = new Date();
-  if (now < new Date(startDate) || now > new Date(endDate)) {
-    throw new BadRequestError("Discount code is expired");
+  const start = new Date(startDate).getTime();
+  const end = new Date(endDate).getTime();
+
+  if (Number.isNaN(start) || Number.isNaN(end)) {
+    throw new BadRequestError("Invalid start/end date");
   }
 
-  if (new Date(startDate) >= new Date(endDate)) {
-    throw new BadRequestError("Start date must be before end date");
+  if (start <= now) {
+    throw new BadRequestError("Discount code start date must be in futture");
   }
 
-  const foundDiscount = await DiscountModel.findOne({ code, shopId }).lean();
+  if (end <= start) {
+    throw new BadRequestError(
+      "Discount code end date must be after start date"
+    );
+  }
 
+  if (type === DISCOUNT_TYPE.PERCENTAGE) {
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+      throw new BadRequestError("Discount percentage must be a number");
+    }
+
+    if (!(value > 0 && value <= 100)) {
+      throw new BadRequestError("Discount percentage must be > 0 and <= 100");
+    }
+
+    if (!Number.isInteger(value)) {
+      throw new BadRequestError("Discount percentage must be a whole interger");
+    }
+  }
+
+  if (minOrderValue <= 0) {
+    throw new BadRequestError(
+      "The minimum order value must be greater than $0"
+    );
+  }
+
+  const foundDiscount = await DiscountRepo.findDiscountCode({
+    filter: { code, shopId },
+    model: DiscountModel,
+  });
   if (foundDiscount) {
     throw new ConflictRequestError("Discount code already exists");
   }
@@ -53,7 +85,7 @@ const createDiscountCode = async ({
     endDate: new Date(endDate),
     quantity,
     usesCount,
-    usersUsed,
+    userUsedIds,
     maxUsesPerUser,
     minOrderValue,
     isActive,
@@ -70,12 +102,15 @@ const findAllProductsWithDiscountCode = async ({
   limit,
   page,
 }) => {
-  const foundDiscount = await DiscountModel.findOne({ code, shopId });
+  const foundDiscount = await DiscountRepo.findDiscountCode({
+    filter: { code, shopId },
+    model: DiscountModel,
+  });
   if (!foundDiscount || !foundDiscount.isActive) {
     throw new NotFoundError("Discount does not exist");
   }
 
-  if (foundDiscount.appliedTo === "all") {
+  if (foundDiscount.appliedTo === DISCOUNT_APPLIED_TO.ALL) {
     return ProductRepo.findAllProducts({
       filter: {
         shopId,
@@ -84,20 +119,21 @@ const findAllProductsWithDiscountCode = async ({
       limit: +limit,
       page: +page,
       sort: "ctime",
-      select: ["product_name"],
+      select: ["name"],
     });
   }
 
-  if (foundDiscount.appliedTo === "specific") {
+  if (foundDiscount.appliedTo === DISCOUNT_APPLIED_TO.SPECIFIC) {
     return ProductRepo.findAllProducts({
       filter: {
         _id: { $in: foundDiscount.productIds },
+        shopId,
         isPublished: true,
       },
       limit: +limit,
       page: +page,
       sort: "ctime",
-      select: ["product_name"],
+      select: ["name"],
     });
   }
 
@@ -126,6 +162,99 @@ const updateDiscountCode = async ({ code, shopId, payload }) => {
   }
 
   return updateDiscountCode;
+};
+
+/**
+ * 1. Check if discount code exists
+ * 2. Check if discount code is still active
+ * 3. Check if discount code dates valid
+ * 4. Check if discount max uses still available
+ * 5. Check how many times current user uses this discount
+ * 6. Checkt total order must be at least equal to the min value order to apply discount code
+ * 7. Check discount type
+ * 8. Check discount code apply to what products
+ *.   8a. if apply to all:
+          get total order and apply discount
+      8b. if apply to specific:
+          get all specific products and apply discount on those only
+   9. Check if total order is at least min value order to apply discount
+   10. return the discount amount along with total order and total checkout
+ */
+
+const getDiscountAmount = async ({ code, shopId, userId, products }) => {
+  const foundDiscount = await DiscountRepo.findDiscountCode({
+    filter: { code, shopId },
+    model: DiscountModel,
+  });
+
+  if (!foundDiscount) {
+    throw new NotFoundError("Discount code does not exist");
+  }
+
+  if (!foundDiscount.isActive) {
+    throw new BadRequestError("Discount code is expired");
+  }
+
+  const now = new Date();
+  const start = new Date(foundDiscount.startDate).getTime();
+  const end = new Date(foundDiscount.endDate).getTime();
+
+  if (now < start) {
+    throw new BadRequestError("Discount code has not been active yet");
+  }
+
+  if (now > end) {
+    throw new BadRequestError("Discount code is expired");
+  }
+
+  const numberUsesByUser = foundDiscount.userUsedIds.filter(
+    (id) => id.toString() === userId
+  );
+  if (
+    foundDiscount.maxUsesPerUser &&
+    numberUsesByUser >= foundDiscount.maxUsesPerUser
+  ) {
+    throw new BadRequestError(
+      `User has reached the maximum usage limit of ${foundDiscount.maxUsesPerUser} for this discount`
+    );
+  }
+
+  let totalOrder = 0;
+  if (foundDiscount.minOrderValue > 0) {
+    if (foundDiscount.appliedTo === DISCOUNT_APPLIED_TO.ALL) {
+      totalOrder = products.reduce(
+        (total, product) => total + product.price * product.quantity,
+        0
+      );
+    } else {
+      const productIdSet = new Set(foundDiscount.productIds.map(String));
+      const appliedProducts = products.filter((product) =>
+        productIdSet.has(product._id.toString())
+      );
+
+      totalOrder = appliedProducts.reduce(
+        (total, product) => total + product.price * product.quantity,
+        0
+      );
+    }
+
+    if (totalOrder < foundDiscount.minOrderValue) {
+      throw new BadRequestError(
+        `Discount requires a minimum order value of ${foundDiscount.minOrderValue}`
+      );
+    }
+  }
+
+  const amountDiscounted =
+    foundDiscount.type === DISCOUNT_TYPE.FIXED
+      ? foundDiscount.value
+      : totalOrder * (foundDiscount.value / 100);
+
+  return {
+    totalOrder,
+    amountDiscounted,
+    totalCheckout: totalOrder - amountDiscounted,
+  };
 };
 
 const DiscountService = {

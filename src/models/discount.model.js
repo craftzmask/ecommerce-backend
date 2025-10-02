@@ -39,19 +39,19 @@ const discountSchema = new Schema(
     },
     quantity: {
       type: Number,
-      required: true,
+      default: 1,
     },
     usesCount: {
       type: Number,
-      required: true,
+      default: 0,
     },
-    usersUsed: {
+    userUsedIds: {
       type: Array,
       default: [],
     },
     maxUsesPerUser: {
       type: Number,
-      required: true,
+      default: 0,
     },
     minOrderValue: {
       type: Number,
@@ -67,8 +67,8 @@ const discountSchema = new Schema(
     },
     appliedTo: {
       type: String,
-      required: true,
       enum: Object.values(DISCOUNT_APPLIED_TO),
+      default: DISCOUNT_APPLIED_TO.ALL,
     },
     productIds: {
       type: Array,
