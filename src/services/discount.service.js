@@ -257,11 +257,47 @@ const getDiscountAmount = async ({ code, shopId, userId, products }) => {
   };
 };
 
+/**
+ * It is better to check other factors before delete the discount code
+ * For example, what if users applied valid discount code to their order
+ * but have not purchased yet.
+ */
+const deleteDiscountCode = async ({ code, shopId }) => {
+  return await DiscountModel.findOneAndDelete({
+    code,
+    shopId,
+  });
+};
+
+const cancelDiscountCode = async ({ code, shopId, userId }) => {
+  const foundDiscount = await DiscountRepo.findAllDiscountCodesSelect({
+    code,
+    shopId,
+  });
+
+  if (!foundDiscount) {
+    throw new NotFoundError("Discount code does not exist");
+  }
+
+  return await DiscountModel.findByIdAndUpdate(foundDiscount._id, {
+    $pull: {
+      userUsedIds: userId,
+    },
+    $inc: {
+      quantity: 1,
+      usesCount: -1,
+    },
+  });
+};
+
 const DiscountService = {
   createDiscountCode,
   updateDiscountCode,
   findAllProductsWithDiscountCode,
   findAllDiscountCodesByShopId,
+  getDiscountAmount,
+  deleteDiscountCode,
+  cancelDiscountCode,
 };
 
 module.exports = DiscountService;
