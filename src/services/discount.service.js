@@ -250,6 +250,16 @@ const getDiscountAmount = async ({ code, shopId, userId, products }) => {
       ? foundDiscount.value
       : totalOrder * (foundDiscount.value / 100);
 
+  await DiscountModel.findByIdAndUpdate(foundDiscount._id, {
+    $push: {
+      userUsedIds: userId,
+    },
+    $inc: {
+      quantity: -1,
+      usesCount: 1,
+    },
+  });
+
   return {
     totalOrder,
     amountDiscounted,
