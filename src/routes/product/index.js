@@ -11,13 +11,13 @@ router.get(
   "/search/:keySearch",
   asyncErrorHandler(ProductController.searchProductsByUser)
 );
-router.get("", ProductController.getAllProducts);
-router.get("/:id", ProductController.getProduct);
+router.get("", asyncErrorHandler(ProductController.getAllProducts));
+router.get("/:id", asyncErrorHandler(ProductController.getProduct));
 
 // Require authentication to perform any actions below
 router.use(authentication);
 
-router.patch("/:productId", ProductController.updateProduct);
+router.patch("/:productId", asyncErrorHandler(ProductController.updateProduct));
 
 router.post("", asyncErrorHandler(ProductController.createProduct));
 router.post(
