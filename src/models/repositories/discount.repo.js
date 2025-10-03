@@ -32,7 +32,7 @@ const findAllDiscountCodesSelect = async ({
 }) => {
   const skip = (page - 1) * limit;
   const sortedBy = sort === "ctime" ? { _id: -1 } : { _id: 1 };
-
+  console.log(filter);
   return await model
     .find(filter)
     .sort(sortedBy)

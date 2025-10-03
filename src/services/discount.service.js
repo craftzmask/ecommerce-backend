@@ -28,7 +28,7 @@ const createDiscountCode = async ({
   appliedTo,
   productIds,
 }) => {
-  const now = new Date();
+  const now = new Date().getTime();
   const start = new Date(startDate).getTime();
   const end = new Date(endDate).getTime();
 
@@ -119,7 +119,7 @@ const findAllProductsWithDiscountCode = async ({
       limit: +limit,
       page: +page,
       sort: "ctime",
-      select: ["name"],
+      select: ["name", "price", "quantity"],
     });
   }
 
@@ -150,12 +150,12 @@ const findAllDiscountCodesByShopId = async ({ limit, page, shopId }) => {
   });
 };
 
-const updateDiscountCode = async ({ code, shopId, payload }) => {
+const updateDiscountCode = async ({ id, shopId, payload }) => {
   const updateDiscountCode = await DiscountModel.findOneAndUpdate(
-    { code, shopId },
-    { $set: payload },
+    { _id: id, shopId },
+    payload,
     { new: true }
-  );
+  ).lean();
 
   if (!updateDiscountCode) {
     throw new NotFoundError("Discount code does not exist");
@@ -180,7 +180,6 @@ const updateDiscountCode = async ({ code, shopId, payload }) => {
    9. Check if total order is at least min value order to apply discount
    10. return the discount amount along with total order and total checkout
  */
-
 const getDiscountAmount = async ({ code, shopId, userId, products }) => {
   const foundDiscount = await DiscountRepo.findDiscountCode({
     filter: { code, shopId },
@@ -209,7 +208,8 @@ const getDiscountAmount = async ({ code, shopId, userId, products }) => {
 
   const numberUsesByUser = foundDiscount.userUsedIds.filter(
     (id) => id.toString() === userId
-  );
+  ).length;
+
   if (
     foundDiscount.maxUsesPerUser &&
     numberUsesByUser >= foundDiscount.maxUsesPerUser
@@ -272,32 +272,46 @@ const getDiscountAmount = async ({ code, shopId, userId, products }) => {
  * For example, what if users applied valid discount code to their order
  * but have not purchased yet.
  */
-const deleteDiscountCode = async ({ code, shopId }) => {
-  return await DiscountModel.findOneAndDelete({
-    code,
+const deleteDiscountCode = async ({ id, shopId }) => {
+  const res = await DiscountModel.findOneAndDelete({
+    _id: id,
     shopId,
   });
+
+  if (res) {
+    return { deleted: true };
+  }
+
+  return { deleted: false };
 };
 
-const cancelDiscountCode = async ({ code, shopId, userId }) => {
-  const foundDiscount = await DiscountRepo.findAllDiscountCodesSelect({
-    code,
-    shopId,
+const cancelDiscountCode = async ({ id, shopId, userId }) => {
+  const foundDiscount = await DiscountRepo.findDiscountCode({
+    filter: { _id: id, shopId },
+    model: DiscountModel,
   });
 
   if (!foundDiscount) {
     throw new NotFoundError("Discount code does not exist");
   }
 
-  return await DiscountModel.findByIdAndUpdate(foundDiscount._id, {
-    $pull: {
-      userUsedIds: userId,
+  const numberOfUses = foundDiscount.userUsedIds.filter(
+    (id) => id.toString() === userId.toString()
+  ).length;
+
+  return await DiscountModel.findByIdAndUpdate(
+    foundDiscount._id,
+    {
+      $pull: {
+        userUsedIds: userId,
+      },
+      $inc: {
+        quantity: numberOfUses,
+        usesCount: -numberOfUses,
+      },
     },
-    $inc: {
-      quantity: 1,
-      usesCount: -1,
-    },
-  });
+    { new: true }
+  );
 };
 
 const DiscountService = {
