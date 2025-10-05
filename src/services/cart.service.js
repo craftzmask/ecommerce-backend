@@ -12,6 +12,7 @@ const { ProductModel } = require("../models/product.model");
 const { BadRequestError, NotFoundError } = require("../core/error.response");
 const { CART_STATUS } = require("../types");
 const { isEmptyObject } = require("../utils");
+const CartRepo = require("../models/repositories/cart.repo");
 
 /**
  * product = {
@@ -21,37 +22,6 @@ const { isEmptyObject } = require("../utils");
  *    quantity
  * }
  */
-
-// REPO
-const createNewUserCart = async ({ userId, product = {} }) => {
-  const filter = { userId, status: CART_STATUS.ACTIVE };
-  const update = {
-    $addToSet: { products: product },
-    $inc: { productCount: product.quantity },
-  };
-  const options = { upsert: true, new: true };
-
-  return await CartModel.findOneAndUpdate(filter, update, options);
-};
-
-const updateProductQuantityInUserCart = async ({ userId, product }) => {
-  const filter = {
-    userId,
-    "products.productId": product.productId,
-    status: CART_STATUS.ACTIVE,
-  };
-  const update = {
-    $inc: {
-      "products.$.quantity": product.quantity,
-      productCount: product.quantity,
-    },
-  };
-  const options = { upsert: true, new: true };
-
-  return await CartModel.findOneAndUpdate(filter, update, options);
-};
-// END REPO
-
 const addToUserCart = async ({ userId, product = {} }) => {
   if (isEmptyObject(product)) {
     throw new BadRequestError("Cannot add an empty product");
@@ -70,11 +40,11 @@ const addToUserCart = async ({ userId, product = {} }) => {
   // If cart does not exist, then create one
   const cart = await CartModel.findOne({ userId, status: CART_STATUS.ACTIVE });
   if (!cart) {
-    return await createNewUserCart({ userId, product });
+    return await CartRepo.createNewUserCart({ userId, product });
   }
   // if cart exists and already has that product, then update quantity
   if (cart.products.find((p) => p.productId === productId)) {
-    return await updateProductQuantityInUserCart({ userId, product });
+    return await CartRepo.updateProductQuantityInUserCart({ userId, product });
   }
 
   // If cart exists, but does not have product, add it
@@ -119,7 +89,7 @@ const updateUserCart = async ({ userId, shopOrderItems }) => {
     await deleteProductFromUserCart({ userId, productId });
   }
 
-  return await updateProductQuantityInUserCart({
+  return await CartRepo.updateProductQuantityInUserCart({
     userId,
     product: {
       productId,
