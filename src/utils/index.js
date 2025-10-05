@@ -39,10 +39,19 @@ const updateNestedObject = (obj) => {
   return final;
 };
 
+const isEmptyObject = (obj) => {
+  if (obj === null || typeof obj !== "object") {
+    return false;
+  }
+
+  return Object.keys(obj).length === 0;
+};
+
 module.exports = {
   getInfoData,
   getSelectData,
   getUnSelectData,
   removeNullObject,
   updateNestedObject,
+  isEmptyObject,
 };

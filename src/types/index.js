@@ -34,6 +34,13 @@ const DISCOUNT_APPLIED_TO = {
   SPECIFIC: "specific",
 };
 
+const CART_STATUS = {
+  ACTIVE: "active",
+  COMPLETED: "completed",
+  FAILED: "failed",
+  PENDING: "pending",
+};
+
 module.exports = {
   HEADERS,
   PRODUCT_TYPE,
@@ -41,4 +48,5 @@ module.exports = {
   SHOP_ROLE,
   DISCOUNT_TYPE,
   DISCOUNT_APPLIED_TO,
+  CART_STATUS,
 };
