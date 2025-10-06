@@ -36,7 +36,7 @@ const createDiscountCode = async ({
     throw new BadRequestError("Invalid start/end date");
   }
 
-  if (start <= now) {
+  if (start < now) {
     throw new BadRequestError("Discount code start date must be in futture");
   }
 
@@ -207,7 +207,7 @@ const getDiscountAmount = async ({ code, shopId, userId, products }) => {
   }
 
   const numberUsesByUser = foundDiscount.userUsedIds.filter(
-    (id) => id.toString() === userId
+    (id) => id.toString() === userId.toString()
   ).length;
 
   if (
@@ -219,36 +219,38 @@ const getDiscountAmount = async ({ code, shopId, userId, products }) => {
     );
   }
 
-  let totalOrder = 0;
+  console.log("MAX USE::", numberUsesByUser, foundDiscount.maxUsesPerUser);
+
+  let totalPrice = 0;
   if (foundDiscount.minOrderValue > 0) {
     if (foundDiscount.appliedTo === DISCOUNT_APPLIED_TO.ALL) {
-      totalOrder = products.reduce(
+      totalPrice = products.reduce(
         (total, product) => total + product.price * product.quantity,
         0
       );
     } else {
       const productIdSet = new Set(foundDiscount.productIds.map(String));
       const appliedProducts = products.filter((product) =>
-        productIdSet.has(product._id.toString())
+        productIdSet.has(product.productId.toString())
       );
 
-      totalOrder = appliedProducts.reduce(
+      totalPrice = appliedProducts.reduce(
         (total, product) => total + product.price * product.quantity,
         0
       );
     }
 
-    if (totalOrder < foundDiscount.minOrderValue) {
+    if (totalPrice < foundDiscount.minOrderValue) {
       throw new BadRequestError(
         `Discount requires a minimum order value of ${foundDiscount.minOrderValue}`
       );
     }
   }
 
-  const amountDiscounted =
+  const discountAmount =
     foundDiscount.type === DISCOUNT_TYPE.FIXED
       ? foundDiscount.value
-      : totalOrder * (foundDiscount.value / 100);
+      : totalPrice * (foundDiscount.value / 100);
 
   await DiscountModel.findByIdAndUpdate(foundDiscount._id, {
     $push: {
@@ -261,9 +263,9 @@ const getDiscountAmount = async ({ code, shopId, userId, products }) => {
   });
 
   return {
-    totalOrder,
-    amountDiscounted,
-    totalCheckout: totalOrder - amountDiscounted,
+    totalPrice,
+    discountAmount,
+    totalCheckout: totalPrice - discountAmount,
   };
 };
 

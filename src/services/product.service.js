@@ -60,7 +60,7 @@ class ProductFactory {
       sort,
       page,
       filter,
-      select: ["_id", "description", "thumb", "shopId"],
+      select: ["_id", "name", "description", "thumb", "shopId"],
     });
   }
 

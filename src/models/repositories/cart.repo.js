@@ -29,6 +29,14 @@ const updateProductQuantityInUserCart = async ({ userId, product }) => {
   return await CartModel.findOneAndUpdate(filter, update, options);
 };
 
-const CartRepo = { createNewUserCart, updateProductQuantityInUserCart };
+const findById = async (id) => {
+  return CartModel.findOne({ _id: id, status: CART_STATUS.ACTIVE }).lean();
+};
+
+const CartRepo = {
+  createNewUserCart,
+  updateProductQuantityInUserCart,
+  findById,
+};
 
 module.exports = CartRepo;

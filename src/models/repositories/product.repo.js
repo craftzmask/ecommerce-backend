@@ -95,6 +95,24 @@ const queryProducts = async ({ query, limit, skip }) => {
     .lean();
 };
 
+const checkPriceFromServer = async (products = []) => {
+  return await Promise.all(
+    products.map(async (product) => {
+      const foundProduct = await ProductModel.findById(
+        product.productId
+      ).lean();
+
+      if (!foundProduct) return null;
+
+      return {
+        price: foundProduct.price,
+        quantity: product.quantity,
+        productId: product.productId,
+      };
+    })
+  );
+};
+
 const ProductRepo = {
   publishProductByShop,
   unPublishProductByShop,
@@ -104,6 +122,7 @@ const ProductRepo = {
   findAllProducts,
   findProduct,
   updateProduct,
+  checkPriceFromServer,
 };
 
 module.exports = ProductRepo;
