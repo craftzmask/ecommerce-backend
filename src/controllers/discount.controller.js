@@ -11,7 +11,6 @@ const createDiscountCode = async (req, res) => {
 };
 
 const getAllProductsWithDiscountCode = async (req, res) => {
-  console.log({ ...req.query });
   new OK({
     message: "Successfully get all products with the discount code",
     metadata: await DiscountService.findAllProductsWithDiscountCode({

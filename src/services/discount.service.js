@@ -219,8 +219,6 @@ const getDiscountAmount = async ({ code, shopId, userId, products }) => {
     );
   }
 
-  console.log("MAX USE::", numberUsesByUser, foundDiscount.maxUsesPerUser);
-
   let totalPrice = 0;
   if (foundDiscount.minOrderValue > 0) {
     if (foundDiscount.appliedTo === DISCOUNT_APPLIED_TO.ALL) {
