@@ -41,6 +41,14 @@ const CART_STATUS = {
   PENDING: "pending",
 };
 
+const ORDER_STATUS = {
+  PENDING: "pending",
+  CONFIRMED: "confirmed",
+  SHIPPED: "shipped",
+  DELIVERED: "delivered",
+  CANCELED: "canceled",
+};
+
 module.exports = {
   HEADERS,
   PRODUCT_TYPE,
@@ -49,4 +57,5 @@ module.exports = {
   DISCOUNT_TYPE,
   DISCOUNT_APPLIED_TO,
   CART_STATUS,
+  ORDER_STATUS,
 };
