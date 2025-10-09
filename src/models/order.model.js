@@ -26,12 +26,13 @@ const orderSchema = new Schema(
       type: Object,
       required: true,
     },
-    checkoutInfo: {
+    checkoutOrderInfo: {
       type: Object,
       required: true,
     },
     status: {
       type: String,
+      default: ORDER_STATUS.PENDING,
       enum: Object.values(ORDER_STATUS),
     },
   },

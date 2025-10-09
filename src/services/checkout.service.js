@@ -3,7 +3,9 @@
 const { NotFoundError, BadRequestError } = require("../core/error.response");
 const CartRepo = require("../models/repositories/cart.repo");
 const ProductRepo = require("../models/repositories/product.repo");
+const InventoryRepo = require("../models/repositories/inventory.repo");
 const DiscountService = require("../services/discount.service");
+const OrderModel = require("../models/order.model");
 
 /**
   {
@@ -15,6 +17,7 @@ const DiscountService = require("../services/discount.service");
           shopDiscounts = [],
           items: [
               productId,
+              shopId,
               quantity,
               price
           ]
@@ -30,6 +33,7 @@ const DiscountService = require("../services/discount.service");
           ],
           items: [
               productId,
+              shopId,
               quantity,
               price
           ]
@@ -103,6 +107,57 @@ const checkoutReview = async ({ userId, cartId, shopOrderItems = [] }) => {
   };
 };
 
-const CheckoutService = { checkoutReview };
+/**
+  1. Reivew the cart
+  2. get all products
+  3. check inventory for each product
+      if any product does not have enough stock in inventory => reject
+      else update inventory
+  4. everything go well -> process the order
+  5. return order infomation
+ */
+const checkoutOrder = async ({ userId, cartId, shopOrderItems }) => {
+  const { newShopOrderItems, checkoutOrder } = await checkoutReview({
+    userId,
+    cartId,
+    shopOrderItems,
+  });
+
+  if (newShopOrderItems.length === 0) {
+    throw new BadRequestError("The list of items is empty");
+  }
+
+  const products = newShopOrderItems.flatMap((shop) => shop.items);
+
+  // Check inventory for each product
+  const productCheckPassed = [];
+  for (const product of products) {
+    const modifiedCount = await InventoryRepo.updateProductInventory({
+      productId: product.productId,
+      shopId: product.shopId,
+      quantity: product.quantity,
+    });
+
+    // Check if any product inventory failed
+    productCheckPassed.push(modifiedCount ? true : false);
+  }
+
+  if (productCheckPassed.includes(false)) {
+    throw new BadRequestError(
+      "One or more products in your cart have been updated. Please check again!"
+    );
+  }
+
+  return await OrderModel.create({
+    userId,
+    cartId,
+    products,
+    payment: {}, // add payment later
+    address: {}, // add address later
+    checkoutOrderInfo: checkoutOrder,
+  });
+};
+
+const CheckoutService = { checkoutReview, checkoutOrder };
 
 module.exports = CheckoutService;

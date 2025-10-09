@@ -105,9 +105,8 @@ const checkPriceFromServer = async (products = []) => {
       if (!foundProduct) return null;
 
       return {
+        ...product,
         price: foundProduct.price,
-        quantity: product.quantity,
-        productId: product.productId,
       };
     })
   );
