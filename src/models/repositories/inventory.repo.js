@@ -14,12 +14,7 @@ const insertInventory = async ({
   });
 };
 
-const updateProductInventory = async ({
-  productId,
-  shopId,
-  quantity,
-  cartId,
-}) => {
+const reserveInventory = async ({ productId, shopId, quantity, cartId }) => {
   const filter = {
     productId,
     shopId,
@@ -33,10 +28,9 @@ const updateProductInventory = async ({
     },
     $push: {
       reservations: {
-        productId,
-        shopId,
         cartId,
         quantity,
+        createdOn: new Date(),
       },
     },
   };
@@ -45,6 +39,6 @@ const updateProductInventory = async ({
   return await InventoryModel.updateOne(filter, update, options);
 };
 
-const InventoryRepo = { insertInventory, updateProductInventory };
+const InventoryRepo = { insertInventory, reserveInventory };
 
 module.exports = InventoryRepo;

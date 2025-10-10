@@ -3,9 +3,9 @@
 const { NotFoundError, BadRequestError } = require("../core/error.response");
 const CartRepo = require("../models/repositories/cart.repo");
 const ProductRepo = require("../models/repositories/product.repo");
-const InventoryRepo = require("../models/repositories/inventory.repo");
 const DiscountService = require("../services/discount.service");
 const OrderModel = require("../models/order.model");
+const RedisService = require("../services/redis.service");
 
 /**
   {
@@ -133,23 +133,29 @@ const checkoutOrder = async ({
     throw new BadRequestError("The list of items is empty");
   }
 
+  // Flat out all products to process in checking inventory
   const products = newShopOrderItems.flatMap((shop) => shop.items);
 
   // Check inventory for each product
-  const productCheckPassed = [];
+  const acquireProducts = [];
   for (const product of products) {
-    const document = await InventoryRepo.updateProductInventory({
+    const keyLock = await RedisService.acquireLock({
       productId: product.productId,
       shopId: product.shopId,
       quantity: product.quantity,
       cartId,
     });
 
-    // Check if any product inventory failed
-    productCheckPassed.push(document.modifiedCount ? true : false);
+    acquireProducts.push(keyLock ? true : false);
+
+    // Release key lock after process a product
+    if (keyLock) {
+      await RedisService.releaseLock(keyLock);
+    }
   }
 
-  if (productCheckPassed.includes(false)) {
+  // if any product failed to process then throw an error
+  if (acquireProducts.includes(false)) {
     throw new BadRequestError(
       "One or more products in your cart have been updated. Please check again!"
     );
