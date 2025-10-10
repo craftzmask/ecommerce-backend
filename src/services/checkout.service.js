@@ -161,7 +161,7 @@ const checkoutOrder = async ({
     );
   }
 
-  return await OrderModel.create({
+  const newOrder = await OrderModel.create({
     userId,
     cartId,
     products,
@@ -169,6 +169,14 @@ const checkoutOrder = async ({
     shipping: userAddress,
     checkoutOrderInfo: checkoutOrder,
   });
+
+  // If order was created successfully,
+  // we need to clear all products in user cart
+  if (newOrder) {
+    await CartRepo.clearProducts({ userId, products });
+  }
+
+  return newOrder;
 };
 
 const CheckoutService = { checkoutReview, checkoutOrder };

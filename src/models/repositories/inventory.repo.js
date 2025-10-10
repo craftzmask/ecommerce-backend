@@ -29,6 +29,7 @@ const reserveInventory = async ({ productId, shopId, quantity, cartId }) => {
     $push: {
       reservations: {
         cartId,
+        productId,
         quantity,
         createdOn: new Date(),
       },
