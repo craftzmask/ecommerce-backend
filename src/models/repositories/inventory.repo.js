@@ -1,5 +1,19 @@
 const InventoryModel = require("../inventory.model");
 
+const insertInventory = async ({
+  productId,
+  shopId,
+  stock,
+  location = "Unknown",
+}) => {
+  return await InventoryModel.create({
+    productId,
+    shopId,
+    stock,
+    location,
+  });
+};
+
 const updateProductInventory = async ({
   productId,
   shopId,
@@ -31,6 +45,6 @@ const updateProductInventory = async ({
   return await InventoryModel.updateOne(filter, update, options);
 };
 
-const InventoryRepo = { updateProductInventory };
+const InventoryRepo = { insertInventory, updateProductInventory };
 
 module.exports = InventoryRepo;
