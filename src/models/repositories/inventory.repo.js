@@ -1,6 +1,11 @@
 const InventoryModel = require("../inventory.model");
 
-const updateProductInventory = async ({ productId, shopId, quantity }) => {
+const updateProductInventory = async ({
+  productId,
+  shopId,
+  quantity,
+  cartId,
+}) => {
   const filter = {
     productId,
     shopId,
@@ -16,6 +21,7 @@ const updateProductInventory = async ({ productId, shopId, quantity }) => {
       reservations: {
         productId,
         shopId,
+        cartId,
         quantity,
       },
     },

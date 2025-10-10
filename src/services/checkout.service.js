@@ -116,7 +116,13 @@ const checkoutReview = async ({ userId, cartId, shopOrderItems = [] }) => {
   4. everything go well -> process the order
   5. return order infomation
  */
-const checkoutOrder = async ({ userId, cartId, shopOrderItems }) => {
+const checkoutOrder = async ({
+  userId,
+  cartId,
+  userPayment = {},
+  userAddress = {},
+  shopOrderItems,
+}) => {
   const { newShopOrderItems, checkoutOrder } = await checkoutReview({
     userId,
     cartId,
@@ -132,14 +138,15 @@ const checkoutOrder = async ({ userId, cartId, shopOrderItems }) => {
   // Check inventory for each product
   const productCheckPassed = [];
   for (const product of products) {
-    const modifiedCount = await InventoryRepo.updateProductInventory({
+    const document = await InventoryRepo.updateProductInventory({
       productId: product.productId,
       shopId: product.shopId,
       quantity: product.quantity,
+      cartId,
     });
 
     // Check if any product inventory failed
-    productCheckPassed.push(modifiedCount ? true : false);
+    productCheckPassed.push(document.modifiedCount ? true : false);
   }
 
   if (productCheckPassed.includes(false)) {
@@ -152,8 +159,8 @@ const checkoutOrder = async ({ userId, cartId, shopOrderItems }) => {
     userId,
     cartId,
     products,
-    payment: {}, // add payment later
-    address: {}, // add address later
+    payment: userPayment,
+    shipping: userAddress,
     checkoutOrderInfo: checkoutOrder,
   });
 };

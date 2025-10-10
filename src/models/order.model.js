@@ -22,8 +22,13 @@ const orderSchema = new Schema(
       type: Object,
       required: true,
     },
-    address: {
+    shipping: {
       type: Object,
+      required: true,
+    },
+    trackingNumber: {
+      type: String,
+      default: "0001121212",
       required: true,
     },
     checkoutOrderInfo: {
