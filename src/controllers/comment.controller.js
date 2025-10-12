@@ -15,6 +15,13 @@ const getCommentsByParentId = async (req, res) => {
   }).send(res);
 };
 
-const CommentController = { addComment, getCommentsByParentId };
+const deleteComment = async (req, res) => {
+  new OK({
+    message: "Delete comment(s) successfully",
+    metadata: await CommentService.deleteComment(req.body),
+  }).send(res);
+};
+
+const CommentController = { addComment, getCommentsByParentId, deleteComment };
 
 module.exports = CommentController;

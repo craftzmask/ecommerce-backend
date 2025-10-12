@@ -1,6 +1,8 @@
 const CommentModel = require("../models/comment.model");
+const ProductRepo = require("../models/repositories/product.repo");
 const { NotFoundError, BadRequestError } = require("../core/error.response");
 const { getSelectData } = require("../utils");
+
 const createComment = async ({
   productId,
   userId,
@@ -87,6 +89,54 @@ const getCommentsByParentId = async ({ productId, parentId = null }) => {
     .lean();
 };
 
-const CommentService = { createComment, getCommentsByParentId };
+const deleteComment = async ({ commentId, productId, userId }) => {
+  const foundProduct = ProductRepo.findProduct({ productId });
+  if (!foundProduct) {
+    throw new NotFoundError("Product does not exist");
+  }
+
+  // Consider allow admin to delete comments as well here
+  const comment = await CommentModel.findOne({
+    _id: commentId,
+    userId,
+  });
+  if (!comment) {
+    throw new NotFoundError("Comment does not exist");
+  }
+
+  const leftValue = comment.left;
+  const rightValue = comment.right;
+
+  const width = rightValue - leftValue + 1;
+
+  // Delete all children and the comment itself
+  await CommentModel.deleteMany({
+    productId,
+    left: { $gte: leftValue, $lte: rightValue },
+  });
+
+  // Update left and right for other comments
+  await CommentModel.updateMany(
+    {
+      productId,
+      left: { $gt: rightValue },
+    },
+    {
+      $inc: { left: -width },
+    }
+  );
+
+  await CommentModel.updateMany(
+    {
+      productId,
+      right: { $gt: rightValue },
+    },
+    {
+      $inc: { right: -width },
+    }
+  );
+};
+
+const CommentService = { createComment, getCommentsByParentId, deleteComment };
 
 module.exports = CommentService;
