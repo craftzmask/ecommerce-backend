@@ -1,5 +1,5 @@
 const CommentService = require("../services/comment.service");
-const { CREATED } = require("../core/success.response");
+const { OK, CREATED } = require("../core/success.response");
 
 const addComment = async (req, res) => {
   new CREATED({
@@ -8,6 +8,13 @@ const addComment = async (req, res) => {
   }).send(res);
 };
 
-const CommentController = { addComment };
+const getCommentsByParentId = async (req, res) => {
+  new OK({
+    message: "Get comments successfully",
+    metadata: await CommentService.getCommentsByParentId({ ...req.query }),
+  }).send(res);
+};
+
+const CommentController = { addComment, getCommentsByParentId };
 
 module.exports = CommentController;

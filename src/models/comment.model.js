@@ -25,7 +25,6 @@ const commentSchema = new Schema(
     },
     left: { type: Number, default: 0 },
     right: { type: Number, default: 0 },
-    isDeleted: { type: Boolean, default: false },
   },
   {
     collection: COLLECTION_NAME,

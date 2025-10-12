@@ -1,6 +1,6 @@
 const CommentModel = require("../models/comment.model");
-const { NotFoundError } = require("../core/error.response");
-
+const { NotFoundError, BadRequestError } = require("../core/error.response");
+const { getSelectData } = require("../utils");
 const createComment = async ({
   productId,
   userId,
@@ -60,6 +60,33 @@ const createComment = async ({
   return await comment.save();
 };
 
-const CommentService = { createComment };
+const getCommentsByParentId = async ({ productId, parentId = null }) => {
+  if (!productId) {
+    throw new BadRequestError("Product does not exist");
+  }
+
+  if (parentId) {
+    const parentComment = await CommentModel.findById(parentId);
+    if (!parentComment) {
+      throw new NotFoundError("The parent comment does not exist");
+    }
+
+    return await CommentModel.find({
+      productId,
+      left: { $gt: parentComment.left },
+      right: { $lte: parentComment.right },
+    })
+      .select(getSelectData(["left", "right", "content", "parentId"]))
+      .sort({ left: -1 })
+      .lean();
+  }
+
+  return await CommentModel.find({ productId, parentId })
+    .select(getSelectData(["left", "right", "content", "parentId"]))
+    .sort({ left: -1 })
+    .lean();
+};
+
+const CommentService = { createComment, getCommentsByParentId };
 
 module.exports = CommentService;

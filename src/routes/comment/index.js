@@ -9,5 +9,6 @@ const CommentController = require("../../controllers/comment.controller");
 router.use(authentication);
 
 router.post("", asyncErrorHandler(CommentController.addComment));
+router.get("", asyncErrorHandler(CommentController.getCommentsByParentId));
 
 module.exports = router;
