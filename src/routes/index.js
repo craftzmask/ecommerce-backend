@@ -13,6 +13,7 @@ router.use(apiKey);
 // check permission
 router.use(permission("0000"));
 
+router.use("/v1/api/notifications", require("./notification"));
 router.use("/v1/api/discounts", require("./discount"));
 router.use("/v1/api/comments", require("./comment"));
 router.use("/v1/api/carts", require("./cart"));

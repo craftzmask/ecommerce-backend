@@ -53,6 +53,7 @@ const NOTIFICATION_TYPE = {
   NEW_ORDER: "ORDER-001",
   DISCOUNT_ORDER: "ORDER-002",
   NEW_PROMO: "PROMO-001",
+  ALL: "ALL",
   // we can add more here
 };
 

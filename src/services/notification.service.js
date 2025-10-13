@@ -25,6 +25,34 @@ const pushToSystem = async ({ type, senderId, receiverId, options = {} }) => {
   });
 };
 
-const NotificationService = { pushToSystem };
+const getListOfNotificationByUserId = async ({
+  userId,
+  type = NOTIFICATION_TYPE.ALL,
+  isRead = 0,
+}) => {
+  console.log(userId, type);
+  let match = { receiverId: userId };
+  if (type !== NOTIFICATION_TYPE.ALL) {
+    match["type"] = type;
+  }
+
+  return await NotificationModel.aggregate([
+    {
+      $match: match,
+    },
+    {
+      $project: {
+        type: 1,
+        senderId: 1,
+        receiverId: 1,
+        content: 1,
+        options: 1,
+        createdAt: 1,
+      },
+    },
+  ]);
+};
+
+const NotificationService = { pushToSystem, getListOfNotificationByUserId };
 
 module.exports = NotificationService;
