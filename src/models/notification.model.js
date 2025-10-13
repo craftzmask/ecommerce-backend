@@ -1,15 +1,17 @@
 "use strict";
 
 const { Schema, model, Types } = require("mongoose");
+const { NOTIFICATION_TYPE } = require("../types");
 
 const DOCUMENT_NAME = "Notification";
 const COLLECTION_NAME = "Notifications";
 
-const commentSchema = new Schema(
+const notificationSchema = new Schema(
   {
     type: {
       type: String,
-      enum: [],
+      default: NOTIFICATION_TYPE.NEW_ORDER,
+      enum: Object.values(NOTIFICATION_TYPE),
     },
     senderId: {
       type: Types.ObjectId,
@@ -35,4 +37,4 @@ const commentSchema = new Schema(
   }
 );
 
-module.exports = model(DOCUMENT_NAME, commentSchema);
+module.exports = model(DOCUMENT_NAME, notificationSchema);

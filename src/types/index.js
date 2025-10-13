@@ -49,6 +49,13 @@ const ORDER_STATUS = {
   CANCELED: "canceled",
 };
 
+const NOTIFICATION_TYPE = {
+  NEW_ORDER: "ORDER-001",
+  DISCOUNT_ORDER: "ORDER-002",
+  NEW_PROMO: "PROMO-001",
+  // we can add more here
+};
+
 module.exports = {
   HEADERS,
   PRODUCT_TYPE,
@@ -58,4 +65,5 @@ module.exports = {
   DISCOUNT_APPLIED_TO,
   CART_STATUS,
   ORDER_STATUS,
+  NOTIFICATION_TYPE,
 };
