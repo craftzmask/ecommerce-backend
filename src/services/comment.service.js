@@ -1,3 +1,5 @@
+"use strict";
+
 const CommentModel = require("../models/comment.model");
 const ProductRepo = require("../models/repositories/product.repo");
 const { NotFoundError, BadRequestError } = require("../core/error.response");

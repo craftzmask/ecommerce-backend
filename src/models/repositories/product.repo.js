@@ -1,3 +1,5 @@
+"use strict";
+
 const { ProductModel } = require("../product.model");
 const { Types } = require("mongoose");
 const { getSelectData, getUnSelectData } = require("../../utils");

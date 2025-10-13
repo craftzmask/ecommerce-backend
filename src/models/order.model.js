@@ -1,3 +1,5 @@
+"use strict";
+
 const { Types, model, Schema } = require("mongoose");
 const { ORDER_STATUS } = require("../types");
 

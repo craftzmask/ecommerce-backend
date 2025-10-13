@@ -1,3 +1,4 @@
+"use strict";
 /**
  * 1. Add product to cart (done)
  * 2. Reduce product quantity

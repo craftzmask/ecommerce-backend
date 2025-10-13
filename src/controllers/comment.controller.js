@@ -1,3 +1,5 @@
+"use strict";
+
 const CommentService = require("../services/comment.service");
 const { OK, CREATED } = require("../core/success.response");
 

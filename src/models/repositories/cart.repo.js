@@ -1,3 +1,5 @@
+"use strict";
+
 const CartModel = require("../cart.model");
 const { CART_STATUS } = require("../../types");
 const { NotFoundError } = require("../../core/error.response");
