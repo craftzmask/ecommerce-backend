@@ -9,7 +9,8 @@ const { BadRequestError } = require("../core/error.response");
 const ProductRepo = require("../models/repositories/product.repo");
 const { updateNestedObject, removeNullObject } = require("../utils");
 const InventoryModel = require("../models/inventory.model");
-const { PRODUCT_TYPE } = require("../types");
+const { PRODUCT_TYPE, NOTIFICATION_TYPE } = require("../types");
+const NotificationService = require("../services/notification.service");
 
 class ProductFactory {
   static productRegistry = {};
@@ -107,6 +108,20 @@ class Product {
         shopId: newProduct.shopId,
         stock: newProduct.quantity,
       });
+
+      // Send notification to user if shop has a new product
+      // Need to do microservices for this kind of system
+      NotificationService.pushToSystem({
+        type: NOTIFICATION_TYPE.NEW_ORDER,
+        senderId: this.shopId,
+        receiverId: 1,
+        options: {
+          productName: this.name,
+          productShopId: this.shopId,
+        },
+      })
+        .then(console.log)
+        .catch(console.error);
     }
 
     return newProduct;
