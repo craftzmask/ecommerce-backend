@@ -1,7 +1,6 @@
 "use strict";
 
 const mongoose = require("mongoose");
-const process = require("process");
 const { countConnect } = require("../helpers/check.connect");
 const {
   db: { host, name, port },
