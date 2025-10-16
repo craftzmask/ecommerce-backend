@@ -37,7 +37,7 @@ const handleRefreshToken = async ({ refreshToken, user, keyStore }) => {
   }
 
   // Generate a new pair of tokens
-  const tokens = await createTokenPair(
+  const tokens = createTokenPair(
     { userId, email },
     keyStore.publicKey,
     keyStore.privateKey

@@ -30,7 +30,7 @@ const createTokenPair = (payload, accessTokenKey, refreshTokenKey) => {
   }
 };
 
-const authentication = asyncErrorHandler(async (req, res, next) => {
+const authentication = asyncErrorHandler(async (req, _res, next) => {
   const userId = req.headers[HEADERS.CLIENT_ID];
   if (!userId) {
     throw new AuthFailureError("Invalid Request");
