@@ -4,7 +4,7 @@ const { Schema, model } = require("mongoose");
 const { CART_STATUS } = require("../types");
 
 const DOCUMENT_NAME = "Cart";
-const COLLECTION_NAME = "carts";
+const COLLECTION_NAME = "Carts";
 
 const cartSchema = new Schema(
   {
