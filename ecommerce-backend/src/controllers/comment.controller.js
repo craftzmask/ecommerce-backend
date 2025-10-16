@@ -13,7 +13,7 @@ const addComment = async (req, res) => {
 const getCommentsByParentId = async (req, res) => {
   OK({
     message: "Get comments successfully",
-    metadata: await CommentService.getCommentsByParentId({ ...req.query }),
+    metadata: await CommentService.getCommentsByParentId(req.query),
   }).send(res);
 };
 
