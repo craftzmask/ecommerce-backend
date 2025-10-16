@@ -27,13 +27,13 @@ require("./dbs/init.mongodb");
 app.use("/", require("./routes"));
 
 // handling error
-app.use((req, res, next) => {
+app.use((_req, _res, next) => {
   const error = new Error(ReasonPhrases.NOT_FOUND);
   error.status = StatusCodes.NOT_FOUND;
   next(error);
 });
 
-app.use((error, req, res, next) => {
+app.use((error, _req, res, _next) => {
   const statusCode = error.status || StatusCodes.INTERNAL_SERVER_ERROR;
   return res.status(statusCode).json({
     status: "error",
