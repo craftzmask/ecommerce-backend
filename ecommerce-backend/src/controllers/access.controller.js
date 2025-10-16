@@ -4,7 +4,7 @@ const AccessService = require("../services/access.service");
 const { OK, CREATED } = require("../core/success.response");
 
 const handleRefreshToken = async (req, res) => {
-  new OK({
+  OK({
     message: "Get tokens successfully",
     metadata: await AccessService.handleRefreshToken({
       refreshToken: req.refreshToken,
@@ -15,21 +15,21 @@ const handleRefreshToken = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  new OK({
+  OK({
     message: "Logout successfully!",
     metadata: await AccessService.logout({ keyStore: req.keyStore }),
   }).send(res);
 };
 
 const login = async (req, res) => {
-  new OK({
+  OK({
     message: "Login successfully!",
     metadata: await AccessService.login(req.body),
   }).send(res);
 };
 
 const signUp = async (req, res) => {
-  new CREATED({
+  CREATED({
     message: "Registered OK",
     metadata: await AccessService.signUp(req.body),
   }).send(res);

@@ -4,14 +4,14 @@ const DiscountService = require("../services/discount.service");
 const { OK, CREATED } = require("../core/success.response");
 
 const createDiscountCode = async (req, res) => {
-  new CREATED({
+  CREATED({
     message: "Generate discount code successfully!",
     metadata: await DiscountService.createDiscountCode(req.body),
   }).send(res);
 };
 
 const getAllProductsWithDiscountCode = async (req, res) => {
-  new OK({
+  OK({
     message: "Successfully get all products with the discount code",
     metadata: await DiscountService.findAllProductsWithDiscountCode({
       ...req.query,
@@ -21,7 +21,7 @@ const getAllProductsWithDiscountCode = async (req, res) => {
 };
 
 const getAllDiscountCodesByShopId = async (req, res) => {
-  new OK({
+  OK({
     message: "Successfully get all discount codes from shop",
     metadata: await DiscountService.findAllDiscountCodesByShopId({
       ...req.query,

@@ -4,7 +4,7 @@ const ProductService = require("../services/product.service");
 const { OK, CREATED } = require("../core/success.response");
 
 const createProduct = async (req, res) => {
-  new CREATED({
+  CREATED({
     message: "Create new product successfully!",
     metadata: await ProductService.createProduct({
       type: req.body.type,
@@ -17,7 +17,7 @@ const createProduct = async (req, res) => {
 };
 
 const publishProductByShop = async (req, res) => {
-  new OK({
+  OK({
     message: "Published product successfully!",
     metadata: await ProductService.publishProductByShop({
       shopId: req.user.userId,
@@ -27,7 +27,7 @@ const publishProductByShop = async (req, res) => {
 };
 
 const unPublishProductByShop = async (req, res) => {
-  new OK({
+  OK({
     message: "Unpublished product successfully!",
     metadata: await ProductService.unPublishProductByShop({
       shopId: req.user.userId,
@@ -37,7 +37,7 @@ const unPublishProductByShop = async (req, res) => {
 };
 
 const searchProductsByUser = async (req, res) => {
-  new OK({
+  OK({
     message: "Returned search products",
     metadata: await ProductService.searchProductsByUser({
       keySearch: req.params.keySearch,
@@ -46,7 +46,7 @@ const searchProductsByUser = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-  new OK({
+  OK({
     message: "Update product successfully!",
     metadata: await ProductService.updateProduct({
       productId: req.params.productId,
@@ -59,7 +59,7 @@ const updateProduct = async (req, res) => {
 
 // QUERY //
 const getAllDraftsForShop = async (req, res) => {
-  new OK({
+  OK({
     message: "Fetch all drafts successfully!",
     metadata: await ProductService.findAllDraftsForShop({
       shopId: req.user.userId,
@@ -68,7 +68,7 @@ const getAllDraftsForShop = async (req, res) => {
 };
 
 const getAllPublishForShop = async (req, res) => {
-  new OK({
+  OK({
     message: "Fetch all publish successfully!",
     metadata: await ProductService.findAllPublishForShop({
       shopId: req.user.userId,
@@ -77,14 +77,14 @@ const getAllPublishForShop = async (req, res) => {
 };
 
 const getAllProducts = async (req, res) => {
-  new OK({
+  OK({
     message: "Get all products successfully!",
     metadata: await ProductService.findAllProducts(req.query),
   }).send(res);
 };
 
 const getProduct = async (req, res) => {
-  new OK({
+  OK({
     message: "Get product successfully!",
     metadata: await ProductService.findProduct({
       product_id: req.params.id,

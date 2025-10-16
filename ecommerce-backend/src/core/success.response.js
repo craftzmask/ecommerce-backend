@@ -19,13 +19,13 @@ class SuccessResponse {
   }
 }
 
-class OK extends SuccessResponse {
+class OkResponse extends SuccessResponse {
   constructor({ message, metadata }) {
     super({ message, metadata });
   }
 }
 
-class CREATED extends SuccessResponse {
+class CreatedResponse extends SuccessResponse {
   constructor({
     message,
     statusCode = StatusCodes.CREATED,
@@ -36,8 +36,15 @@ class CREATED extends SuccessResponse {
   }
 }
 
+const OK = ({ message, metadata }) => {
+  return new OkResponse({ message, metadata });
+};
+
+const CREATED = ({ message, metadata }) => {
+  return new CreatedResponse({ message, metadata });
+};
+
 module.exports = {
   OK,
   CREATED,
-  SuccessResponse,
 };
