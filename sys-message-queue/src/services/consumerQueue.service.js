@@ -25,10 +25,15 @@ const receiveMessageFromQueueNormal = async () => {
     const { channel } = await RabbitMQ.connectToRabbitMQ();
     const { QUEUE } = notificationQueue;
 
-    channel.consume(QUEUE, (msg) => {
-      console.log("Received normally msg::", msg.content.toString());
-      channel.ack(msg);
-    });
+    // Similate TTL and we catch the error
+    // The message expiration is 10s but this
+    // takes 15s to consume => direct it into DL Queue
+    setTimeout(() => {
+      channel.consume(QUEUE, (msg) => {
+        console.log("Received normally msg::", msg.content.toString());
+        channel.ack(msg);
+      });
+    }, 15000);
   } catch (error) {
     console.error(error);
     throw error;
