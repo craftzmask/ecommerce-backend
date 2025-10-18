@@ -25,17 +25,34 @@ const receiveMessageFromQueueNormal = async () => {
     const { channel } = await RabbitMQ.connectToRabbitMQ();
     const { QUEUE } = notificationQueue;
 
-    // Similate TTL and we catch the error
+    // Simulate TTL and we catch the error
     // The message expiration is 10s but this
     // takes 15s to consume => direct it into DL Queue
-    setTimeout(() => {
-      channel.consume(QUEUE, (msg) => {
+    // setTimeout(() => {
+    //   channel.consume(QUEUE, (msg) => {
+    //     console.log("Received normally msg::", msg.content.toString());
+    //     channel.ack(msg);
+    //   });
+    // }, 15000);
+
+    // Simulate logic error and we catch the error
+    // and pass that message down to failure queue
+    channel.consume(QUEUE, (msg) => {
+      try {
+        const numtest = Math.random();
+        console.log(numtest);
+        if (numtest < 0.8) {
+          throw new Error("Send notification failed");
+        }
+
         console.log("Received normally msg::", msg.content.toString());
         channel.ack(msg);
-      });
-    }, 15000);
+      } catch (error) {
+        channel.nack(msg, false, false);
+      }
+    });
   } catch (error) {
-    console.error(error);
+    console.log(error.message);
     throw error;
   }
 };
