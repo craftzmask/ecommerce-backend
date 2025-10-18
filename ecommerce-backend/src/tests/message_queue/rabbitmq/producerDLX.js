@@ -38,6 +38,12 @@ const runProducer = async () => {
     channel.publish(EXCHANGE, "", Buffer.from(message), {
       expiration: "10000", // Time to live 10s
     });
+
+    // 5. Close connection after 0.5s
+    setTimeout(() => {
+      connection.close();
+      process.exit(0);
+    }, 500);
   } catch (error) {
     console.error(error);
     throw error;
